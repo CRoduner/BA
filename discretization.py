@@ -26,5 +26,5 @@ wnew[i,j,k] = w[i,j,k] + dt*(
     dri^2*(w[i+1,j,k]-2.*w[i,j,k]+w[i-1,j,k]) + ri^2*dphii^2*(w[i,j+1,k]-2.*w[i,j,k]+w[i,j-1,k]) + dzi^2*(w[i,j,k+1]-2.*w[i,j,k]+w[i,j,k-1]) +
     (ri-0.25*(u[i,j,k]+u[i-1,j,k]+u[i,j,k+1]+u[i-1,j,k+1]))*0.5*dri*(w[i+1,j,k]-w[i-1,j,k]) -
     ri*0.25(v[i,j,k]+v[i,j-1,k]+v[i,j,k+1]+v[i,j-1,k+1])*0.5*dphii*(w[i,j+1,k]-w[i,j-1,k]) - w[i,j,k]*0.5*dzi*(w[i,j,k+1]-w[i,j,k-1]) -
-    dzi*(p[i,j,k+1]-p[i,j,k-1]) )
+    dzi*(p[i,j,k+1]-p[i,j,k]) - g )
 
