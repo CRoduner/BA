@@ -35,7 +35,7 @@ z_v = np.linspace(0,h_t, n_z)
 # w-Gitter w(r,phi,z)           evtl. erste w-Ebene unter erster u,v,p-Ebene ?
 r_w = np.linspace(dr,r_t, n_r)
 phi_w =  np.linspace(0,2*pi, n_phi)
-z_w = np.linspace(dz-dz/2,h_t-dz/2, n_z)
+z_w = np.linspace(dz+dz/2,h_t-dz/2, n_z-1)
 
 # p-Gitter p(r,phi,z):
 r_p = np.linspace(dr,r_t, n_r)
@@ -50,9 +50,9 @@ u = np.zeros((n_r,n_phi,n_z))
 unew = np.zeros((n_r,n_phi,n_z))
 v = np.zeros((n_r,n_phi,n_z))
 vnew = np.zeros((n_r,n_phi,n_z))
-w = np.zeros((n_r,n_phi,n_z))
-wnew = np.zeros((n_r,n_phi,n_z))
-p = np.zeros((n_r,n_phi,n_z))    # Nachregelung?
+w = np.zeros((n_r,n_phi,n_z-1))
+wnew = np.zeros((n_r,n_phi,n_z-1))
+p = np.ones((n_r,n_phi,n_z))    # Nachregelung?
 
 # discretization
 
