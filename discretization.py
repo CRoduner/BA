@@ -7,14 +7,12 @@ dzi=1/dz
 ri=1/r[i]
 
 
+
 unew[i,j,k] = u[i,j,k] + dt*(
      dri^2*(u[i+1,j,k]-2.*u[i,j,k]+u[i-1,j,k]) + ri^2*dphii^2*(u[i,j+1,k]-2.*u[i,j,k]+u[i,j-1,k]) + dzi^2*(u[i,j,k+1]-2.*u[i,j,k]+u[i,j,k-1]) +
-     (ri-u[i,j,k])*0.5*dri*(u[i+1,j,k]-u[i-1,j,k]) - ri*0.25*(v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k])*0.5*dphii*(u[i,j+1,k]-u[i,j-1,k]) - # v Approximation Patrik: v[i,j,k]+v[i,j-1,k]+v[i-1,j,k]+v[i-1,j-1,k]
-     0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[u,j,k-1]) - # w Approximation Patrik: w[i,j,k]+w[i-1,j,k]+w[i,j,k-1]+w[i-1,j,k-1]
-     ri^2*dphii*(v[i+1,j,k]+v[i,j,k]-v[i+1,j-1,k]-v[i,j-1,k]) - # dito v[i-1,..] anstatt v[i+1,..]
-     ri^2*u[i,j,k] + 0.5*omega*(v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]) + # dito v
-     omega^2*r[i] - dri*(p[i+1,j,k]-p[i,j,k]) # p : p[i,j,k]-p[i-1,j,k]
-     )
+     (ri-u[i,j,k])*0.5*dri*(u[i+1,j,k]-u[i-1,j,k]) - ri*0.25*(v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k])*0.5*dphii*(u[i,j+1,k]-u[i,j-1,k]) -
+     0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[u,j,k-1]) - ri^2*dphii*(v[i+1,j,k]+v[i,j,k]-v[i+1,j-1,k]-v[i,j-1,k]) -
+     ri^2*u[i,j,k] + 0.5*omega*(v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]) + omega^2*r[i] - dri*(p[i+1,j,k]-p[i,j,k]) )
 
 vnew[i,j,k] = v[i,j,k] + dt*(
     dri^2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + ri^2*dphii^2*(v[i,j+1,k]-2.*v[i,j,k]+u[i,j-1,k]) + dzi^2*(v[i,j,k+1]-2.*v[i,j,k]+v[i,j,k-1]) +

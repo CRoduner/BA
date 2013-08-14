@@ -11,7 +11,7 @@ r_t=8
 h_t=1
 
 # Anzahl Gitterpunkte
-n_r,n_phi,n_z = 8,8,2
+n_r,n_phi,n_z = 50,50,25
 
 # p-Gitter p(r,phi,z):
 r_p = np.linspace(r_t/n_r,r_t, n_r)
@@ -36,3 +36,7 @@ v_grid = [r_v,phi_v,z_v]
 
 plt.polar(phi_p,r_p)
 plt.show()
+
+
+
+
