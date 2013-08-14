@@ -32,7 +32,7 @@ z_v = np.linspace(0,h_t, n_z)
 
 #v_grid = [r_v,phi_v,z_v]
 
-# w-Gitter w(r,phi,z)
+# w-Gitter w(r,phi,z)           evtl. erste w-Ebene unter erster u,v,p-Ebene ?
 r_w = np.linspace(dr,r_t, n_r)
 phi_w =  np.linspace(0,2*pi, n_phi)
 z_w = np.linspace(dz-dz/2,h_t-dz/2, n_z)
@@ -46,13 +46,13 @@ z_p = np.linspace(0,h_t, n_z)
 
 
 # matrix initialization
-u = np.zeros((50,50,25))
-unew = np.zeros((50,50,25))
-v = np.zeros((50,50,25))
-vnew = np.zeros((50,50,25))
-w = np.zeros((50,50,25))
-wnew = np.zeros((50,50,25))
-p = np.zeros((50,50,25))    # Nachregelung?
+u = np.zeros((n_r,n_phi,n_z))
+unew = np.zeros((n_r,n_phi,n_z))
+v = np.zeros((n_r,n_phi,n_z))
+vnew = np.zeros((n_r,n_phi,n_z))
+w = np.zeros((n_r,n_phi,n_z))
+wnew = np.zeros((n_r,n_phi,n_z))
+p = np.zeros((n_r,n_phi,n_z))    # Nachregelung?
 
 # discretization
 
