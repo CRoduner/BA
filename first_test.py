@@ -20,7 +20,9 @@ gn = 9.81
 dt = 0.02
 
 # number of grid points
-n_r,n_phi,n_z = 50,50,25
+n_r = 50
+n_phi = 50
+n_z = 25
 
 # stepsizes
 dr = r_t/n_r
@@ -88,6 +90,7 @@ for i in range(1,n_r):
                                          0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[u,j,k-1]) -
                                          ri**2*dphii*(v[i+1,j,k]+v[i,j,k]-v[i+1,j-1,k]-v[i,j-1,k]) - ri**2*u[i,j,k] +
                                          0.5*om*(v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]) + (om**2)*r[i] - dri*(p[i+1,j,k]-p[i,j,k]) )
+                                         
 
             vnew[i,j,k] = v[i,j,k] + dt*(dri**2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + ri**2*dphii**2*(v[i,j+1,k]-2.*v[i,j,k]+u[i,j-1,k]) +
                                          dzi**2*(v[i,j,k+1]-2.*v[i,j,k]+v[i,j,k-1]) +
@@ -108,5 +111,3 @@ print(unew)
 print(vnew)
 print(wnew)
 print(p)
-
-
