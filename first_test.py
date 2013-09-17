@@ -104,3 +104,9 @@ for i in range(1,n_r):
                                          w[i,j,k]*0.5*dzi*(w[i,j,k+1]-w[i,j,k-1]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
 
 
+print(unew)
+print(vnew)
+print(wnew)
+print(p)
+
+
