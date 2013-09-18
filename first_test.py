@@ -79,11 +79,11 @@ dzi=1/dz
 om=10
 g=9.81
 
-for i in range(1,n_r):
+for i in np.arange(1,n_r,dtype=int):
     ri=1/r[i]           # r noch definieren
-    for j in range(1,n_phi):
+    for j in np.arange(1,n_phi,dtype=int):
         for k in range(1,n_z):
-
+            #unew[i,j,k] = u[i,j,k] + v[i-1,j,k]
             unew[i,j,k] = u[i,j,k] + dt*(dri**2*(u[i+1,j,k]-2.*u[i,j,k]+u[i-1,j,k]) + ri**2*dphii**2*(u[i,j+1,k]-2.*u[i,j,k]+u[i,j-1,k]) +
                                          dzi**2*(u[i,j,k+1]-2.*u[i,j,k]+u[i,j,k-1]) + (ri-u[i,j,k])*0.5*dri*(u[i+1,j,k]-u[i-1,j,k]) -
                                          ri*0.25*(v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k])*0.5*dphii*(u[i,j+1,k]-u[i,j-1,k]) -
