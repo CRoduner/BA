@@ -84,22 +84,23 @@ for j in range(n_phi):
         jm = j-1
         jp = j+1
 
-    for k in range(1,n_z):
-
+    for k in range(1,n_z-1):
+        ri=1/r[0]
         unew[0,j,k] = u[0,j,k] + dt*(dri**2*(u[2,j,k]-2.*u[1,j,k]+u[0,j,k]) + ri**2*dphii**2*(u[0,jp,k]-2.*u[0,j,k]+u[0,jm,k]) +
                                      dzi**2*(u[0,j,k+1]-2.*u[0,j,k]+u[0,j,k-1]) + (ri-u[0,j,k])*dri*(u[1,j,k]-u[0,j,k]) -
                                      ri/3.*(v[0,j,k]+v[1,jm,k]+v[1,j,k])*0.5*dphii*(u[0,jp,k]-u[0,jm,k]) -
                                      0.25*(w[0,j,k]+w[1,j,k]+w[0,j,k-1]+w[1,j,k-1])*0.5*dzi*(u[0,j,k+1]-u[0,j,k-1]) -
                                      ri**2*dphii*(v[1,j,k]+v[0,j,k]-v[1,jm,k]-v[0,jm,k]) - ri**2*u[0,j,k] +
                                      0.5*om*(v[0,j,k]+v[0,jm,k]+v[1,jm,k]+v[1,j,k]) + (om**2)*r[0] - dri*(p[1,j,k]-p[0,j,k]) )
-
+        ri=1/r[n_r-2]
         unew[n_r-2,j,k] = u[n_r-2,j,k] + dt*(dri**2*(u[n_r-2,j,k]-2.*u[n_r-3,j,k]+u[n_r-4,j,k]) + ri**2*dphii**2*(u[n_r-2,jp,k]-2.*u[n_r-2,j,k]+u[n_r-2,jm,k]) +
                                      dzi**2*(u[n_r-2,j,k+1]-2.*u[n_r-2,j,k]+u[n_r-2,j,k-1]) + (ri-u[n_r-2,j,k])*dri*(u[n_r-2,j,k]-u[n_r-3,j,k]) -
                                      ri*0.25*(v[n_z-2,j,k]+v[n_z-2,jm,k]+v[n_z-3,jm,k]+v[n_z-3,j,k])*0.5*dphii*(u[n_z-2,jp,k]-u[n_z-2,jm,k]) -
                                      0.25*(w[n_z-2,j,k]+w[n_z-3,j,k]+w[n_z-2,j,k-1]+w[n_z-3,j,k-1])*0.5*dzi*(u[n_z-2,j,k+1]-u[n_z-2,j,k-1]) -
                                      ri**2*dphii*(v[n_z-3,j,k]+v[n_z-2,j,k]-v[n_z-3,jm,k]-v[n_z-2,jm,k]) - ri**2*u[n_z-2,j,k] +
                                      0.5*om*(v[n_z-2,j,k]+v[n_z-2,jm,k]+v[n_z-3,jm,k]+v[n_z-3,j,k]) + (om**2)*r[n_z-2] - dri*(p[n_z-2,j,k]-p[n_z-3,j,k]) )
-    for k in range(1,n_z-1):
+    for k in range(1,n_z-2):
+        ri=1/r[0]
         wnew[0,j,k] = w[0,j,k] + dt*(dri**2*(w[2,j,k]-2.*w[1,j,k]+w[0,j,k]) + ri**2*dphii**2*(w[0,jp,k]-2.*w[0,j,k]+w[0,jm,k]) +
                                      dzi**2*(w[0,j,k+1]-2.*w[0,j,k]+w[0,j,k-1]) +
                                      (ri-0.25*(u[1,j,k]+u[0,j,k]+u[1,j,k+1]+u[0,j,k+1]))*dri*(w[1,j,k]-w[0,j,k]) -
@@ -108,13 +109,15 @@ for j in range(n_phi):
 
 
 ### Randwerte k=0 für u,v,p (Werte noch nicht bestimmt)
-for i in range(n_r):
-    for j in range(n_phi):
+for j in range(n_phi):
+    for i in range(n_r-1):
         u[i,j,0] = 0
+    for i in range(n_r):
         v[i,j,0] = 0
         p[i,j,0] = 1
 ### Spezialfall k=0, k=n_z-2 für w und k=n_z-1 für u,v
 for i in range(1,n_r-1):
+    ri=1/r[i]
     for j in range(n_phi):
         if j==0:
             jm = n_phi-1
@@ -139,24 +142,36 @@ for i in range(1,n_r-1):
                                              ri*0.25*(v[i,j,n_z-2]+v[i,jm,n_z-2]+v[i,j,n_z-3]+v[i,jm,n_z-3])*0.5*dphii*(w[i,jp,n_z-2]-w[i,jm,n_z-2]) -
                                              w[i,j,n_z-2]*dzi*(w[i,j,n_z-2]-w[i,j,n_z-3]) - dzi*(p[i,j,n_z-2]-p[i,j,n_z-3]) - g )
 
-        unew[i,j,n_z-1] = u[i,j,n_z-1] + dt*(dri**2*(u[i+1,j,n_z-1]-2.*u[i,j,n_z-1]+u[i-1,j,n_z-1]) +
-                                             ri**2*dphii**2*(u[i,jp,n_z-1]-2.*u[i,j,n_z-1]+u[i,jm,n_z-1]) +
-                                             dzi**2*(u[i,j,n_z-1]-2.*u[i,j,n_z-2]+u[i,j,n_z-3]) + (ri-u[i,j,n_z-1])*0.5*dri*(u[i+1,j,n_z-1]-u[i-1,j,n_z-1]) -
-                                             ri*0.25*(v[i,j,n_z-1]+v[i,jm,n_z-1]+v[i+1,jm,n_z-1]+v[i+1,j,n_z-1])*0.5*dphii*(u[i,jp,n_z-1]-u[i,jm,n_z-1]) -
-                                             0.25*(w[i,j,n_z-1]+w[i+1,j,n_z-1]+w[i,j,n_z-2]+w[i+1,j,n_z-2])*0.5*dzi*(u[i,j,n_z-1]-u[i,j,n_z-2]) -
-                                             ri**2*dphii*(v[i+1,j,n_z-1]+v[i,j,n_z-1]-v[i+1,jm,n_z-1]-v[i,jm,n_z-1]) - ri**2*u[i,j,n_z-1] +
-                                             0.5*om*(v[i,j,n_z-1]+v[i,jm,n_z-1]+v[i+1,jm,n_z-1]+v[i+1,j,n_z-1]) +
-                                             (om**2)*r[i] - dri*(p[i+1,j,n_z-1]-p[i,j,n_z-1]) )
-
         vnew[i,j,n_z-1] = v[i,j,n_z-1] + dt*(dri**2*(v[i+1,j,n_z-1]-2.*v[i,j,n_z-1]+v[i-1,j,n_z-1]) +
                                              ri**2*dphii**2*(v[i,jp,n_z-1]-2.*v[i,j,n_z-1]+u[i,jm,n_z-1]) +
                                              dzi**2*(v[i,j,n_z-1]-2.*v[i,j,n_z-2]+v[i,j,n_z-3]) +
                                              (ri-0.25*(u[i,j,n_z-1]+u[i-1,j,n_z-1]+u[i,jp,n_z-1]+u[i-1,jp,n_z-1]))*0.5*dri*(v[i+1,j,n_z-1]-v[i-1,j,n_z-1]) -
                                              ri*v[i,j,n_z-1]*0.5*dphii*(v[i,jp,n_z-1]-v[i,jm,n_z-1]) -
-                                             0.25*(w[i,j,n_z-1]+w[i,jp,n_z-1]+w[i,j,n_z-2]+w[i,jp,n_z-2])*0.5*dzi*(v[i,j,n_z-1]-v[i,j,n_z-2]) +
+                                             0.25*(0+0+w[i,j,n_z-2]+w[i,jp,n_z-2])*0.5*dzi*(v[i,j,n_z-1]-v[i,j,n_z-2]) + # Vorfaktor 0.5 oder 0.25 / w ganz aussen nul setzen bzw. vernachlässigen
                                              ri**2*dphii*(u[i,j,n_z-1]+u[i-1,j,n_z-1]-u[i,jp,n_z-1]-u[i-1,jp,n_z-1]) - ri**2*v[i,j,n_z-1] -
                                              0.5*om*(u[i,j,n_z-1]+u[i-1,j,n_z-1]+u[i,jp,n_z-1]+u[i-1,jp,n_z-1]) - ri*dphii*(p[i,jp,n_z-1]-p[i,j,n_z-1]) )
 
+for i in range(1,n_r-2):
+    ri=1/r[i]
+    for j in range(n_phi):
+        if j==0:
+            jm = n_phi-1
+            jp = j+1
+        elif j==n_phi-1:
+            jm = j-1
+            jp = 0
+        else:
+            jm = j-1
+            jp = j+1
+            
+        unew[i,j,n_z-1] = u[i,j,n_z-1] + dt*(dri**2*(u[i+1,j,n_z-1]-2.*u[i,j,n_z-1]+u[i-1,j,n_z-1]) +
+                                             ri**2*dphii**2*(u[i,jp,n_z-1]-2.*u[i,j,n_z-1]+u[i,jm,n_z-1]) +
+                                             dzi**2*(u[i,j,n_z-1]-2.*u[i,j,n_z-2]+u[i,j,n_z-3]) + (ri-u[i,j,n_z-1])*0.5*dri*(u[i+1,j,n_z-1]-u[i-1,j,n_z-1]) -
+                                             ri*0.25*(v[i,j,n_z-1]+v[i,jm,n_z-1]+v[i+1,jm,n_z-1]+v[i+1,j,n_z-1])*0.5*dphii*(u[i,jp,n_z-1]-u[i,jm,n_z-1]) -
+                                             0.25*(0+0+w[i,j,n_z-2]+w[i+1,j,n_z-2])*0.5*dzi*(u[i,j,n_z-1]-u[i,j,n_z-2]) - # Vorfaktor 0.5 oder 0.25
+                                             ri**2*dphii*(v[i+1,j,n_z-1]+v[i,j,n_z-1]-v[i+1,jm,n_z-1]-v[i,jm,n_z-1]) - ri**2*u[i,j,n_z-1] +
+                                             0.5*om*(v[i,j,n_z-1]+v[i,jm,n_z-1]+v[i+1,jm,n_z-1]+v[i+1,j,n_z-1]) +
+                                             (om**2)*r[i] - dri*(p[i+1,j,n_z-1]-p[i,j,n_z-1]) )
 
 
 ### Speziafall k=n_z-1 für u,v
