@@ -184,8 +184,6 @@ while all([[[div_u[i,j,k] > precision[i,j,k] for i in range(n_r)] for j in range
                                                  0.5*om*(v[i,j,n_z-1]+v[i,jm,n_z-1]+v[i+1,jm,n_z-1]+v[i+1,j,n_z-1]) +
                                                  (om**2)*ru[i] - dri*(p[i+1,j,n_z-1]-p[i,j,n_z-1]) )
 
-
-    ### Speziafall k=n_z-1 für u,v
             
     ## allgemeiner Fall
     for i in range(1,n_r-2):
@@ -228,6 +226,7 @@ while all([[[div_u[i,j,k] > precision[i,j,k] for i in range(n_r)] for j in range
     v = vnew
     w = wnew
 
+    ## Drucknachregelung
     for i in range(1,n_r-1):
         rpi=1/rp[i]
         for j in range(n_phi):
@@ -238,8 +237,8 @@ while all([[[div_u[i,j,k] > precision[i,j,k] for i in range(n_r)] for j in range
                 
             for k in range(1,n_z-1):
                 div_u[i,j,k] = rpi*0.5*(u[i-1,j,k]+u[i,j,k]) + dri*(u[i,j,k]-u[i-1,j,k]) + rpi*dphii*(v[i,j,k]-v[i,jm,k]) + dzi*(w[i,j,k-1]-w[i,j,k]) 
-
                 pnew[i,j,k] = p[i,j,k] + lamb*div_u[i,j,k]
+                
     p = pnew
 
 
