@@ -35,7 +35,7 @@ dr = r_t/n_r
 dphi = 2*pi/n_phi
 dz = h_t/n_z
 
-precision=10**(-5)*np.ones((n_r,n_phi,n_z))   # Gewünschte Präzision der Divergenzfreiheit
+precision=10**(-2)*np.ones((n_r,n_phi,n_z))   # Gewünschte Präzision der Divergenzfreiheit
 
 ## Abkürzungen, Dimensionen
 dri=1/dr
@@ -61,7 +61,7 @@ wnew = np.zeros((n_r,n_phi,n_z-1))
 p = np.ones((n_r,n_phi,n_z))    # Nachregelung?
 pnew = np.zeros((n_r,n_phi,n_z))
 
-div_u = np.zeros((n_r,n_phi,n_z))
+div_u = np.ones((n_r,n_phi,n_z))
 
 
 # Zeitschlaufe
@@ -69,7 +69,7 @@ div_u = np.zeros((n_r,n_phi,n_z))
 ## Intitialisierung der Randwerte / Spezialfälle:
 
 
-while all([[[div_u[i,j,k] > precision[i,j,k] for i in range(n_r)] for j in range(n_phi)] for k in range(n_z)]):
+while all([[[div_u[i,j,k] > precision[i,j,k] for i in range(n_r)] for j in range(n_phi)] for k in range(n_z)]): # Maximum von div(u) 
 
     ### Randwerte i=0, i=n_r-1 für v,p und i=n_r-1 für w(Werte noch nicht bestimmt)
     for j in range(n_phi):
