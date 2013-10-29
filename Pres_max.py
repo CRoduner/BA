@@ -223,6 +223,8 @@ u = unew
 v = vnew
 w = wnew
 
+print("u:", unew[1,:,1])
+
 ## Drucknachregelung
 ### Divergenz von (u,v,w) auf p-Gitter
 for i in range(1,n_r-1):
@@ -249,9 +251,9 @@ while div_max > precision:
                 
             for k in range(1,n_z-1):
                 pnew[i,j,k] = p[i,j,k] + lamb*div_u[i,j,k]
-                unew[i,j,k] = u[i,j,k] - dt*(lamb*dri*(div_u[i+1,j,k]-u[i,j,k]))
-                vnew[i,j,k] = v[i,j,k] - dt*(lamb*rpi*dphii*(div_u[i,jp,k]-u[i,j,k]))
-                wnew[i,j,k] = w[i,j,k] - dt*(lamb*dri*(div_u[i,j,k+1]-u[i,j,k]))
+                unew[i,j,k] = u[i,j,k] - dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))
+                vnew[i,j,k] = v[i,j,k] - dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
+                wnew[i,j,k] = w[i,j,k] - dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
 
                 div_u[i,j,k] = (rpi*0.5*(unew[i-1,j,k]+unew[i,j,k]) + dri*(unew[i,j,k]-unew[i-1,j,k]) + rpi*dphii*(vnew[i,j,k]-vnew[i,jm,k]) +
                                 dzi*(wnew[i,j,k-1]-wnew[i,j,k]) )
@@ -260,5 +262,7 @@ while div_max > precision:
     v = vnew
     w = wnew
     div_max = np.amax(div_u)
+    print("u(phi):", unew[1,:,1])
+    print("u(r):", unew[:,1,1])
 
 print("u:", unew[1,:,1])
