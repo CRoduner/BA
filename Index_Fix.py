@@ -35,7 +35,7 @@ dr = r_t/n_r
 dphi = 2*pi/n_phi
 dz = h_t/n_z
 
-precision=10**(-2)*np.ones((n_r,n_phi,n_z))   # Gewünschte Präzision der Divergenzfreiheit
+precision=10**(-2)   # Gewünschte Präzision der Divergenzfreiheit
 
 ## Abkürzungen, Dimensionen
 dri=1/dr
@@ -239,7 +239,7 @@ for i in range(1,n_r-1):
         for k in range(1,n_z-1):
             div_u[i,j,k] = rpi*0.5*(u[i-1,j,k]+u[i,j,k]) + dri*(u[i,j,k]-u[i-1,j,k]) + rpi*dphii*(v[i,j,k]-v[i,jm,k]) + dzi*(w[i,j,k-1]-w[i,j,k]) 
 
-while all([[[div_u[i,j,k] > precision[i,j,k] for i in range(n_r)] for j in range(n_phi)] for k in range(n_z)]):
+while all([[[div_u[i,j,k] > precision for i in range(n_r)] for j in range(n_phi)] for k in range(n_z)]):
     for i in range(1,n_r-1):
         rpi=1/rp[i]
         for j in range(n_phi):
