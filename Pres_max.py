@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 
 ## To do:
 ##          - Entdimensionalisierung!!  -> Zeitschritt und Gittergrösse
-##          - Radius am Mittelpunkt
+##          - Vorzeichen überprüfen
 ##          - Spezialfälle k=0 für p und div(u)
+##          - Radius am Mittelpunkt
     
 
 
@@ -280,10 +281,10 @@ while div_max > precision:
                 jm = j-1
                 
             for k in range(n_z-2):
-                pnew[i,j,k] = p[i,j,k] - lamb*div_u[i,j,k]  #+/- lambda
-                unew[i,j,k] = u[i,j,k] + dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
-                vnew[i,j,k] = v[i,j,k] + dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
-                wnew[i,j,k] = w[i,j,k] + dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
+                pnew[i,j,k] = p[i,j,k] + lamb*div_u[i,j,k]  #+/- lambda
+                unew[i,j,k] = u[i,j,k] - dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
+                vnew[i,j,k] = v[i,j,k] - dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
+                wnew[i,j,k] = w[i,j,k] - dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
     #Spezialfälle i=0, i=n_r-1
     for j in range(n_phi):
@@ -293,14 +294,14 @@ while div_max > precision:
             jm = j-1
             
         for k in range(n_z-2): 
-            pnew[0,j,k] = p[0,j,k] - lamb*div_u[0,j,k]  #+/- lambda
-            pnew[n_r-1,j,k] = p[n_r-1,j,k] - lamb*div_u[n_r-1,j,k]
-            unew[0,j,k] = u[0,j,k] + dt*(lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
+            pnew[0,j,k] = p[0,j,k] + lamb*div_u[0,j,k]  #+/- lambda
+            pnew[n_r-1,j,k] = p[n_r-1,j,k] + lamb*div_u[n_r-1,j,k]
+            unew[0,j,k] = u[0,j,k] - dt*(lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
             # u[n_r-1,..] existiert nicht
-            vnew[0,j,k] = v[0,j,k] + dt*(lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
-            vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*(lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
-            wnew[0,j,k] = w[0,j,k] + dt*(lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
-            wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*(lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
+            vnew[0,j,k] = v[0,j,k] - dt*(lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
+            vnew[n_r-1,j,k] = v[n_r-1,j,k] - dt*(lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
+            wnew[0,j,k] = w[0,j,k] - dt*(lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
+            wnew[n_r-1,j,k] = w[n_r-1,j,k] - dt*(lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
     # Spezialfälle k=0, k=n_z-1
 
     for i in range(1,n_r-1):
