@@ -224,6 +224,8 @@ v = vnew
 w = wnew
 
 print("u:", unew[:,1,1])
+print("v:", vnew[:,1,1])
+print("w:", wnew[:,1,1])
 
 ## Drucknachregelung
 ### Divergenz von (u,v,w) auf p-Gitter
