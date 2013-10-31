@@ -3,6 +3,13 @@ import numpy as np
 import matplotlib as mp
 import matplotlib.pyplot as plt
 
+## To do:
+##          - Entdimensionalisierung!!  -> Zeitschritt und Gittergrösse
+##          - Radius am Mittelpunkt
+##          - Spezialfälle k=0 für p und div(u)
+    
+
+
 # u Radialkomponente der Geschwindigkeit, v Azimutalkomponente der Geschwindigkeit, w vertikale Komponente der Geschwindigkeit, p Druck
 
 pi=math.pi
@@ -12,7 +19,7 @@ r_t=10
 h_t=10
 omega=10      # in rpm
 
-# fixed stuff
+# fixed stuff       -> Entdimensionalisierung nachvollziehen und durchführen!!
 gn = 9.81
 #gdim = 
 #omegadim =
