@@ -20,7 +20,7 @@ gn = 9.81
 #g=gn/gdim         # undimensionalized version of gravity constant gn
 om=10
 g=9.81
-lamb=1.5             # Koeffizient für Drucknachregelung lambda
+lamb=1.5            # Koeffizient für Drucknachregelung lambda
 
 # time steps
 dt = 0.002
@@ -249,10 +249,11 @@ for j in range(n_phi):
         jm = j-1
         
     for k in range(1,n_z-2):
-        # nehme für u den innerst möglichen Wert
-        div_u[0,j,k] = rpi*(u[0,j,k]) + dri*(u[1,j,k]-u[0,j,k]) + rpi*dphii*(v[0,j,k]-v[0,jm,k]) + dzi*(w[0,j,k+1]-w[0,j,k])
+        # nehme für u den innerst möglichen Wert -> was mache ich mit rpi?? -> vorübergehend rp[1]
+        div_u[0,j,k] = 1/rp[1]*(u[0,j,k]) + dri*(u[1,j,k]-u[0,j,k]) + 1/rp[1]*dphii*(v[0,j,k]-v[0,jm,k]) + dzi*(w[0,j,k+1]-w[0,j,k])
         # nehme für u den äusserst möglichen Wert
-        div_u[n_r-1,j,k] = rpi*(u[n_r-2,j,k]) + dri*(u[n_r-2,j,k]-u[n_r-3,j,k]) + rpi*dphii*(v[n_r-1,j,k]-v[n_r-1,jm,k]) + dzi*(w[n_r-1,j,k+1]-w[n_r-1,j,k])
+        div_u[n_r-1,j,k] = (1/rp[n_r-1]*(u[n_r-2,j,k]) + dri*(u[n_r-2,j,k]-u[n_r-3,j,k]) + 1/rp[n_r-1]*dphii*(v[n_r-1,j,k]-v[n_r-1,jm,k]) +
+                            dzi*(w[n_r-1,j,k+1]-w[n_r-1,j,k]) )
 # Randwerte für k (...)
         
 
@@ -277,7 +278,23 @@ while div_max > precision:
                 vnew[i,j,k] = v[i,j,k] + dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
                 wnew[i,j,k] = w[i,j,k] + dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
-                
+    #Spezialfälle i=0, i=n_r-1
+    for j in range(n_phi):
+        if j==0:
+            jm = n_phi-1
+        else:
+            jm = j-1
+            
+        for k in range(n_z-2): 
+            pnew[0,j,k] = p[0,j,k] - lamb*div_u[0,j,k]  #+/- lambda
+            pnew[n_r-1,j,k] = p[n_r-1,j,k] - lamb*div_u[n_r-1,j,k]
+            unew[0,j,k] = u[0,j,k] + dt*(lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
+            # u[n_r-1,..] existiert nicht
+            vnew[0,j,k] = v[0,j,k] + dt*(lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
+            vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*(lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
+            wnew[0,j,k] = w[0,j,k] + dt*(lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
+            wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*(lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
+    # Spezialfälle k=0, k=n_z-1
 
     for i in range(1,n_r-1):
         rpi=1/rp[i]
