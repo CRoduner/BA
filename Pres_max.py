@@ -263,7 +263,7 @@ div_max = np.amax(div_u)
 
 count=0
 while div_max > precision:
-    for i in range(n_r-1):
+    for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
         rpi=1/rp[i]
         for j in range(n_phi):
             if j==0:
@@ -273,9 +273,9 @@ while div_max > precision:
                 
             for k in range(n_z-2):
                 pnew[i,j,k] = p[i,j,k] - lamb*div_u[i,j,k]  #+/- lambda
-                unew[i,j,k] = u[i,j,k] - dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))
-                vnew[i,j,k] = v[i,j,k] - dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
-                wnew[i,j,k] = w[i,j,k] - dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
+                unew[i,j,k] = u[i,j,k] + dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
+                vnew[i,j,k] = v[i,j,k] + dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
+                wnew[i,j,k] = w[i,j,k] + dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
                 
 
