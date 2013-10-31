@@ -20,10 +20,10 @@ gn = 9.81
 #g=gn/gdim         # undimensionalized version of gravity constant gn
 om=10
 g=9.81
-lamb=1             # Koeffizient für Drucknachregelung lambda
+lamb=1.5             # Koeffizient für Drucknachregelung lambda
 
 # time steps
-dt = 0.02
+dt = 0.002
 
 # number of grid points
 n_r = 20
@@ -35,7 +35,7 @@ dr = r_t/n_r
 dphi = 2*pi/n_phi
 dz = h_t/n_z
 
-precision=10**(-2)  # Gewünschte Präzision der Divergenzfreiheit
+precision=10**(-5)  # Gewünschte Präzision der Divergenzfreiheit
 
 ## Abkürzungen, Dimensionen
 dri=1/dr
@@ -71,7 +71,7 @@ div_u = np.zeros((n_r,n_phi,n_z))
 ### Randwerte i=0, i=n_r-1 für v,p und i=n_r-1 für w(Werte noch nicht bestimmt)
 for j in range(n_phi):
     for k in range (1,n_z):
-        v[n_r-1,j,k] = om
+        v[n_r-1,j,k] = 0
         p[n_r-1,j,k] = 1
         v[0,j,k] = 0
         p[0,j,k] = 1
@@ -223,7 +223,7 @@ u = unew
 v = vnew
 w = wnew
 
-print("u:", unew[1,:,1])
+print("u:", unew[:,1,1])
 
 ## Drucknachregelung
 ### Divergenz von (u,v,w) auf p-Gitter
@@ -235,11 +235,26 @@ for i in range(1,n_r-1):
         else:
             jm = j-1
             
-        for k in range(1,n_z-1):
-            div_u[i,j,k] = rpi*0.5*(u[i-1,j,k]+u[i,j,k]) + dri*(u[i,j,k]-u[i-1,j,k]) + rpi*dphii*(v[i,j,k]-v[i,jm,k]) + dzi*(w[i,j,k-1]-w[i,j,k]) 
+        for k in range(1,n_z-2):
+            div_u[i,j,k] = rpi*0.5*(u[i-1,j,k]+u[i,j,k]) + dri*(u[i,j,k]-u[i-1,j,k]) + rpi*dphii*(v[i,j,k]-v[i,jm,k]) + dzi*(w[i,j,k+1]-w[i,j,k])
+##for j in range(n_phi):
+##    if j==0:
+##        jm = n_phi-1
+##    else:
+##        jm = j-1
+##        
+##    for k in range(1,n_z-2):
+##        div_u[0,j,k] = rpi*0.5*(u[i-1,j,k]+u[i,j,k]) + dri*(u[i,j,k]-u[i-1,j,k]) + rpi*dphii*(v[i,j,k]-v[i,jm,k]) + dzi*(w[i,j,k+1]-w[i,j,k])
 
+        
+    #print(rpi*0.5*(u[i-1,2,4]+u[i,2,4]), dri*(u[i,2,4]-u[i-1,2,4]), rpi*dphii*(v[i,2,4]-v[i,1,4]), dzi*(w[i,2,5]-w[i,2,4]) )
+
+print("vor Nachregelung")
+print("div(r):", div_u[:,1,1])
+print("p(r):", p[:,1,1])
 div_max = np.amax(div_u)
 
+count=0
 while div_max > precision:
     for i in range(1,n_r-1):
         rpi=1/rp[i]
@@ -249,20 +264,24 @@ while div_max > precision:
             else:
                 jm = j-1
                 
-            for k in range(1,n_z-1):
-                pnew[i,j,k] = p[i,j,k] + lamb*div_u[i,j,k]
+            for k in range(n_z-2):
+                pnew[i,j,k] = p[i,j,k] - lamb*div_u[i,j,k]  #+/- lambda
                 unew[i,j,k] = u[i,j,k] - dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))
                 vnew[i,j,k] = v[i,j,k] - dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
                 wnew[i,j,k] = w[i,j,k] - dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
-
+                #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
                 div_u[i,j,k] = (rpi*0.5*(unew[i-1,j,k]+unew[i,j,k]) + dri*(unew[i,j,k]-unew[i-1,j,k]) + rpi*dphii*(vnew[i,j,k]-vnew[i,jm,k]) +
-                                dzi*(wnew[i,j,k-1]-wnew[i,j,k]) )
+                                dzi*(wnew[i,j,k+1]-wnew[i,j,k]) )
     p = pnew
     u = unew
     v = vnew
     w = wnew
     div_max = np.amax(div_u)
-    print("u(phi):", unew[1,:,1])
+    count=count+1
+    print("während der Nachregelung", count)
     print("u(r):", unew[:,1,1])
-
-print("u:", unew[1,:,1])
+    print("v(r):", vnew[:,1,1])
+    print("p(r):", pnew[:,1,1])
+    print("div(r):", div_u[:,1,1])
+print("nach der Nachregelung")
+print("div(r):", div_u[:,1,1])
