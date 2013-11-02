@@ -245,7 +245,7 @@ for i in range(1,n_r-1):
         else:
             jm = j-1
             
-        for k in range(1,n_z-2):
+        for k in range(n_z-2):
             div_u[i,j,k] = rpi*0.5*(u[i-1,j,k]+u[i,j,k]) + dri*(u[i,j,k]-u[i-1,j,k]) + rpi*dphii*(v[i,j,k]-v[i,jm,k]) + dzi*(w[i,j,k+1]-w[i,j,k])
     #print(rpi*0.5*(u[i-1,2,4]+u[i,2,4]), dri*(u[i,2,4]-u[i-1,2,4]), rpi*dphii*(v[i,2,4]-v[i,1,4]), dzi*(w[i,2,5]-w[i,2,4]) )
             
@@ -256,14 +256,24 @@ for j in range(n_phi):
     else:
         jm = j-1
         
-    for k in range(1,n_z-2):
+    for k in range(n_z-2):
         # nehme für u den innerst möglichen Wert -> was mache ich mit rpi?? -> vorübergehend rp[1]
         div_u[0,j,k] = 1/rp[1]*(u[0,j,k]) + dri*(u[1,j,k]-u[0,j,k]) + 1/rp[1]*dphii*(v[0,j,k]-v[0,jm,k]) + dzi*(w[0,j,k+1]-w[0,j,k])
         # nehme für u den äusserst möglichen Wert
         div_u[n_r-1,j,k] = (1/rp[n_r-1]*(u[n_r-2,j,k]) + dri*(u[n_r-2,j,k]-u[n_r-3,j,k]) + 1/rp[n_r-1]*dphii*(v[n_r-1,j,k]-v[n_r-1,jm,k]) +
                             dzi*(w[n_r-1,j,k+1]-w[n_r-1,j,k]) )
 # Randwerte für k (...)
-        
+for i in range(1,n_r-1):
+    rpi=1/rp[i]
+    for j in range(n_phi):
+        if j==0:
+            jm = n_phi-1
+        else:
+            jm = j-1
+        # nehme oberst mögliches w    
+        div_u[i,j,n_z-1] = (rpi*0.5*(unew[i-1,j,n_z-1]+unew[i,j,n_z-1]) + dri*(unew[i,j,n_z-1]-unew[i-1,j,n_z-1]) +
+                            rpi*dphii*(vnew[i,j,n_z-1]-vnew[i,jm,n_z-1]) + dzi*(wnew[i,j,n_z-2]-wnew[i,j,n_z-3]) )
+    
 
 print("vor Nachregelung")
 print("div(r):", div_u[:,1,1])
@@ -280,10 +290,11 @@ while div_max > precision:
             else:
                 jm = j-1
                 
-            for k in range(n_z-2):
+            for k in range(n_z):
                 pnew[i,j,k] = p[i,j,k] + lamb*div_u[i,j,k]  #+/- lambda
                 unew[i,j,k] = u[i,j,k] - dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
                 vnew[i,j,k] = v[i,j,k] - dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
+            for k in range(n_z-2):
                 wnew[i,j,k] = w[i,j,k] - dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
     #Spezialfälle i=0, i=n_r-1
@@ -293,17 +304,28 @@ while div_max > precision:
         else:
             jm = j-1
             
-        for k in range(n_z-2): 
+        for k in range(n_z): 
             pnew[0,j,k] = p[0,j,k] + lamb*div_u[0,j,k]  #+/- lambda
             pnew[n_r-1,j,k] = p[n_r-1,j,k] + lamb*div_u[n_r-1,j,k]
             unew[0,j,k] = u[0,j,k] - dt*(lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
             # u[n_r-1,..] existiert nicht
             vnew[0,j,k] = v[0,j,k] - dt*(lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
             vnew[n_r-1,j,k] = v[n_r-1,j,k] - dt*(lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
+        for k in range(n_z-2): 
             wnew[0,j,k] = w[0,j,k] - dt*(lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
             wnew[n_r-1,j,k] = w[n_r-1,j,k] - dt*(lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
-    # Spezialfälle k=0, k=n_z-1
-
+    # Spezialfälle k=n_z-1
+    for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
+        rpi=1/rp[i]
+        for j in range(n_phi):
+            if j==0:
+                jm = n_phi-1
+            else:
+                jm = j-1
+            # nehme oberst mögliches z
+            wnew[i,j,n_z-2] = w[i,j,n_z-2] - dt*(lamb*dri*(div_u[i,j,n_z-2]-div_u[i,j,n_z-3]))
+            
+# Divergenz:
     for i in range(1,n_r-1):
         rpi=1/rp[i]
         for j in range(n_phi):
@@ -323,12 +345,22 @@ while div_max > precision:
             jm = j-1
             
         for k in range(1,n_z-2):
-            # nehme für u den innerst möglichen Wert
-            div_u[0,j,k] = rpi*(unew[0,j,k]) + dri*(unew[1,j,k]-unew[0,j,k]) + rpi*dphii*(vnew[0,j,k]-vnew[0,jm,k]) + dzi*(wnew[0,j,k+1]-wnew[0,j,k])
+            # nehme für u den innerst möglichen Wert    -> vorübergehend rp[1]
+            div_u[0,j,k] = 1/rp[1]*(unew[0,j,k]) + dri*(unew[1,j,k]-unew[0,j,k]) + 1/rp[1]*dphii*(vnew[0,j,k]-vnew[0,jm,k]) + dzi*(wnew[0,j,k+1]-wnew[0,j,k])
             # nehme für u den äusserst möglichen Wert
             div_u[n_r-1,j,k] = (rpi*(unew[n_r-2,j,k]) + dri*(unew[n_r-2,j,k]-unew[n_r-3,j,k]) + rpi*dphii*(vnew[n_r-1,j,k]-vnew[n_r-1,jm,k]) +
                                 dzi*(wnew[n_r-1,j,k+1]-wnew[n_r-1,j,k]) )
-    #Randwerte k=0, k=n_z-1 (...)
+    #Randwerte k=n_z-1
+    for i in range(1,n_r-1):
+        rpi=1/rp[i]
+        for j in range(n_phi):
+            if j==0:
+                jm = n_phi-1
+            else:
+                jm = j-1
+            # nehme oberst mögliches w    
+            div_u[i,j,n_z-1] = (rpi*0.5*(unew[i-1,j,n_z-1]+unew[i,j,n_z-1]) + dri*(unew[i,j,n_z-1]-unew[i-1,j,n_z-1]) +
+                                rpi*dphii*(vnew[i,j,n_z-1]-vnew[i,jm,n_z-1]) + dzi*(wnew[i,j,n_z-2]-wnew[i,j,n_z-3]) )
 
     p = pnew
     u = unew
