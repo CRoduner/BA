@@ -295,11 +295,11 @@ while div_max > precision:
                 jm = j-1
                 
             for k in range(n_z):
-                pnew[i,j,k] = p[i,j,k] - 1/dt*lamb*div_u[i,j,k]  #+/- lambda
-                unew[i,j,k] = u[i,j,k] + (lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
-                vnew[i,j,k] = v[i,j,k] + (lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
+                pnew[i,j,k] = p[i,j,k] + 1/dt*lamb*div_u[i,j,k]  #+/- lambda
+                unew[i,j,k] = u[i,j,k] - (lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
+                vnew[i,j,k] = v[i,j,k] - (lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
             for k in range(n_z-2):
-                wnew[i,j,k] = w[i,j,k] + (lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
+                wnew[i,j,k] = w[i,j,k] - (lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
     #Spezialfälle i=0, i=n_r-1
     for j in range(n_phi):
@@ -309,15 +309,15 @@ while div_max > precision:
             jm = j-1
             
         for k in range(n_z): 
-            pnew[0,j,k] = p[0,j,k] - 1/dt*lamb*div_u[0,j,k]  #+/- lambda
-            pnew[n_r-1,j,k] = p[n_r-1,j,k] - 1/dt*lamb*div_u[n_r-1,j,k]
-            unew[0,j,k] = u[0,j,k] + (lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
+            pnew[0,j,k] = p[0,j,k] + 1/dt*lamb*div_u[0,j,k]  #+/- lambda
+            pnew[n_r-1,j,k] = p[n_r-1,j,k] + 1/dt*lamb*div_u[n_r-1,j,k]
+            unew[0,j,k] = u[0,j,k] - (lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
             # u[n_r-1,..] existiert nicht
-            vnew[0,j,k] = v[0,j,k] + (lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
-            vnew[n_r-1,j,k] = v[n_r-1,j,k] + (lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
+            vnew[0,j,k] = v[0,j,k] - (lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
+            vnew[n_r-1,j,k] = v[n_r-1,j,k] - (lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
         for k in range(n_z-2): 
-            wnew[0,j,k] = w[0,j,k] + (lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
-            wnew[n_r-1,j,k] = w[n_r-1,j,k] + (lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
+            wnew[0,j,k] = w[0,j,k] - (lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
+            wnew[n_r-1,j,k] = w[n_r-1,j,k] - (lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
     # Spezialfälle k=n_z-1
     for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
         rpi=1/rp[i]
@@ -327,7 +327,7 @@ while div_max > precision:
             else:
                 jm = j-1
             # nehme oberst mögliches z
-            wnew[i,j,n_z-2] = w[i,j,n_z-2] + (lamb*dri*(div_u[i,j,n_z-2]-div_u[i,j,n_z-3]))
+            wnew[i,j,n_z-2] = w[i,j,n_z-2] - (lamb*dri*(div_u[i,j,n_z-2]-div_u[i,j,n_z-3]))
             
 # Divergenz:
     for i in range(1,n_r-1):
@@ -372,7 +372,7 @@ while div_max > precision:
     w = wnew
     div_max = np.amax(div_u)
     count=count+1
-    #print("während der Nachregelung", count)
+    print("während der Nachregelung", count)
     #print("u(r):", unew[:,1,1])
     #print("v(r):", vnew[:,1,1])
     print("p(r):", pnew[:,1,1])
