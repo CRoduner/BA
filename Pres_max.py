@@ -4,9 +4,7 @@ import matplotlib as mp
 import matplotlib.pyplot as plt
 
 ## To do:
-##          - Entdimensionalisierung!!  -> Zeitschritt und Gittergrösse
-##          - Vorzeichen überprüfen
-##          - Spezialfälle k=0 für p und div(u)
+##          - neue Terme für u,v,w
 ##          - Radius am Mittelpunkt
     
 
@@ -18,20 +16,7 @@ pi=math.pi
 # tanksize & angular velocity
 r_t=10
 h_t=10
-omega=10      # in rpm
-
-# fixed stuff       -> Entdimensionalisierung nachvollziehen und durchführen!!
-gn = 9.81
-#gdim = 
-#omegadim =
-#om=omega/omegadim # undimensionalized version of omega
-#g=gn/gdim         # undimensionalized version of gravity constant gn
-om=10
-g=9.81
-lamb=1.5            # Koeffizient für Drucknachregelung lambda
-
-# time steps
-dt = 0.002
+omega=1./6      # in s^(-1)
 
 # number of grid points
 n_r = 20
@@ -45,13 +30,30 @@ dz = h_t/n_z
 
 precision=10**(-5)  # Gewünschte Präzision der Divergenzfreiheit
 
+
+# fixed stuff & Entdimensionalisierung
+U = 0.01                # typische Grösse für (u,v,w) ?
+L = dr                  # typische Grösse für (r,phi,z) -> Gittergrösse?
+
+gn = 9.81
+gdim = L/U**2
+g = gn/gdim             # undimensionalized version of gravity constant gn
+
+omegadim = L/U
+om = omega/omegadim     # undimensionalized version of omega
+
+lamb=1.5                # Koeffizient für Drucknachregelung lambda
+
+# time steps
+dt = dphi/om            # entdimensionalisiertes Omega => entdimensionalisierter Zeitschritt dt
+
 ## Abkürzungen, Dimensionen
 dri=1/dr
 dphii=1/dphi
 dzi=1/dz
 
 
-# r-vector
+# r-vector, phi-vector
 ru = np.linspace(dr-dr/2,r_t-dr/2, n_r)
 rp = np.linspace(0,r_t, n_r)
 
@@ -66,7 +68,7 @@ vnew = np.zeros((n_r,n_phi,n_z))
 w = np.zeros((n_r,n_phi,n_z-1))
 wnew = np.zeros((n_r,n_phi,n_z-1))
 
-p = np.ones((n_r,n_phi,n_z))    # Nachregelung?
+p = np.ones((n_r,n_phi,n_z))
 pnew = np.zeros((n_r,n_phi,n_z))
 
 div_u = np.zeros((n_r,n_phi,n_z))
@@ -114,8 +116,8 @@ for j in range(n_phi):
                                              rui**2*dphii*(v[n_z-3,j,k]+v[n_z-2,j,k]-v[n_z-3,jm,k]-v[n_z-2,jm,k]) - rui**2*u[n_z-2,j,k] +
                                              0.5*om*(v[n_z-2,j,k]+v[n_z-2,jm,k]+v[n_z-3,jm,k]+v[n_z-3,j,k]) + (om**2)*ru[n_z-2] - dri*(p[n_z-2,j,k]-p[n_z-3,j,k]) )
     for k in range(1,n_z-2):
-        #rpi=1/rp[0]         # Radius hier ist Null... Durch Null teilen...
-        rpi=10**(-10)
+        #rpi=1/rp[0]        # Radius hier ist Null... Durch Null teilen...
+        rpi=1/rp[1]         # vorübergehende Lösung
         wnew[0,j,k] = w[0,j,k] + dt*(dri**2*(w[2,j,k]-2.*w[1,j,k]+w[0,j,k]) + rpi**2*dphii**2*(w[0,jp,k]-2.*w[0,j,k]+w[0,jm,k]) +
                                      dzi**2*(w[0,j,k+1]-2.*w[0,j,k]+w[0,j,k-1]) +
                                      (rpi-0.25*(u[1,j,k]+u[0,j,k]+u[1,j,k+1]+u[0,j,k+1]))*dri*(w[1,j,k]-w[0,j,k]) -
@@ -235,7 +237,6 @@ print("u:", unew[:,1,1])
 print("v:", vnew[:,1,1])
 print("w:", wnew[:,1,1])
 
-## Drucknachregelung
 ### Divergenz von (u,v,w) auf p-Gitter
 for i in range(1,n_r-1):
     rpi=1/rp[i]
@@ -282,6 +283,7 @@ print("div(z):", div_u[1,1,:])
 print("p(r):", p[:,1,1])
 div_max = np.amax(div_u)
 
+## Drucknachregelung
 count=0
 while div_max > precision:
     for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
@@ -293,11 +295,11 @@ while div_max > precision:
                 jm = j-1
                 
             for k in range(n_z):
-                pnew[i,j,k] = p[i,j,k] - lamb*div_u[i,j,k]  #+/- lambda
-                unew[i,j,k] = u[i,j,k] + dt*(lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
-                vnew[i,j,k] = v[i,j,k] + dt*(lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
+                pnew[i,j,k] = p[i,j,k] - 1/dt*lamb*div_u[i,j,k]  #+/- lambda
+                unew[i,j,k] = u[i,j,k] + (lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k]))    # +/- ?
+                vnew[i,j,k] = v[i,j,k] + (lamb*rpi*dphii*(div_u[i,jp,k]-div_u[i,j,k]))
             for k in range(n_z-2):
-                wnew[i,j,k] = w[i,j,k] + dt*(lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
+                wnew[i,j,k] = w[i,j,k] + (lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k]))
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
     #Spezialfälle i=0, i=n_r-1
     for j in range(n_phi):
@@ -307,15 +309,15 @@ while div_max > precision:
             jm = j-1
             
         for k in range(n_z): 
-            pnew[0,j,k] = p[0,j,k] - lamb*div_u[0,j,k]  #+/- lambda
-            pnew[n_r-1,j,k] = p[n_r-1,j,k] - lamb*div_u[n_r-1,j,k]
-            unew[0,j,k] = u[0,j,k] + dt*(lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
+            pnew[0,j,k] = p[0,j,k] - 1/dt*lamb*div_u[0,j,k]  #+/- lambda
+            pnew[n_r-1,j,k] = p[n_r-1,j,k] - 1/dt*lamb*div_u[n_r-1,j,k]
+            unew[0,j,k] = u[0,j,k] + (lamb*dri*(div_u[1,j,k]-div_u[0,j,k]))    # +/- ?
             # u[n_r-1,..] existiert nicht
-            vnew[0,j,k] = v[0,j,k] + dt*(lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
-            vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*(lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
+            vnew[0,j,k] = v[0,j,k] + (lamb/rp[1]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
+            vnew[n_r-1,j,k] = v[n_r-1,j,k] + (lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp,k]-div_u[n_r-1,j,k]))
         for k in range(n_z-2): 
-            wnew[0,j,k] = w[0,j,k] + dt*(lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
-            wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*(lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
+            wnew[0,j,k] = w[0,j,k] + (lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k]))
+            wnew[n_r-1,j,k] = w[n_r-1,j,k] + (lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k]))
     # Spezialfälle k=n_z-1
     for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
         rpi=1/rp[i]
@@ -325,7 +327,7 @@ while div_max > precision:
             else:
                 jm = j-1
             # nehme oberst mögliches z
-            wnew[i,j,n_z-2] = w[i,j,n_z-2] + dt*(lamb*dri*(div_u[i,j,n_z-2]-div_u[i,j,n_z-3]))
+            wnew[i,j,n_z-2] = w[i,j,n_z-2] + (lamb*dri*(div_u[i,j,n_z-2]-div_u[i,j,n_z-3]))
             
 # Divergenz:
     for i in range(1,n_r-1):
