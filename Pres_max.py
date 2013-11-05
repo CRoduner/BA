@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 pi=math.pi
 
 # tanksize & angular velocity
-r_t=10
-h_t=10
+r_t=0.5
+h_t=0.3
 omega=1./6      # in s^(-1)
 
 # number of grid points
@@ -32,8 +32,12 @@ precision=10**(-5)  # Gewünschte Präzision der Divergenzfreiheit
 
 
 # fixed stuff & Entdimensionalisierung
-U = 0.01                # typische Grösse für (u,v,w) ?
+U = 0.01                # typische Grösse für (u,v,w) ? -> müsste das grösser sein?
 L = dr                  # typische Grösse für (r,phi,z) -> Gittergrösse?
+
+nu_W = 10**(-6)         # kinematische Viskosität
+Rey = U*L/nu_W          # Reynolds Number
+Reyi = 1/Rey
 
 gn = 9.81
 gdim = L/U**2
@@ -45,7 +49,7 @@ om = omega/omegadim     # undimensionalized version of omega
 lamb=1.5                # Koeffizient für Drucknachregelung lambda
 
 # time steps
-dt = dphi/om            # entdimensionalisiertes Omega => entdimensionalisierter Zeitschritt dt
+dt = dphi/om            # entdimensionalisiertes als max. Geschwindigkeit Omega => entdimensionalisierter Zeitschritt dt
 
 ## Abkürzungen, Dimensionen
 dri=1/dr
@@ -54,8 +58,9 @@ dzi=1/dz
 
 
 # r-vector, phi-vector
-ru = np.linspace(dr-dr/2,r_t-dr/2, n_r)
-rp = np.linspace(0,r_t, n_r)
+ru = np.arange(dr/2,r_t+dr/2, dr)
+rp = np.arange(0,r_t+dr, dr)
+phiv = np.linspace(dphi/2, 2*pi-dphi/2, n_phi)
 
 
 # matrix initialization
@@ -74,11 +79,11 @@ pnew = np.zeros((n_r,n_phi,n_z))
 div_u = np.zeros((n_r,n_phi,n_z))
 
 
-# Zeitschlaufe
+# Zeitschlaufe (sollte dann mal hier beginnen...)
 
 ## Intitialisierung der Randwerte / Spezialfälle:
 
-### Randwerte i=0, i=n_r-1 für v,p und i=n_r-1 für w(Werte noch nicht bestimmt)
+### Randwerte i=0, i=n_r-1 für v,p und i=n_r-1 für w (Werte noch nicht bestimmt)
 for j in range(n_phi):
     for k in range (1,n_z):
         v[n_r-1,j,k] = 0
