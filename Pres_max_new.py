@@ -255,34 +255,32 @@ count=0
 while div_max < 1e10: 
 
 ### Divergenz von (u,v,w) auf p-Gitter
-    for i in range(1,n_r-1):
+    for i in range(1,n_r-1):        #kann nicht bei 0 starten, wegen rp[0]=0
         rpi=1/rp[i]
         for j in range(n_phi):
             for k in range(n_z-2):
                 div_u[i,j,k] = rpi*0.5*(u[i-1,j,k]+u[i,j,k]) + dri*(u[i,j,k]-u[i-1,j,k]) + rpi*dphii*(v[i,j,k]-v[i,jm(j,n_phi),k]) + dzi*(w[i,j,k+1]-w[i,j,k])
     #print(rpi*0.5*(u[i-1,2,4]+u[i,2,4]), dri*(u[i,2,4]-u[i-1,2,4]), rpi*dphii*(v[i,2,4]-v[i,1,4]), dzi*(w[i,2,5]-w[i,2,4]) )
             
-# Randwerte für i
+    # Randwerte für i
     for j in range(n_phi):
         for k in range(n_z-2):
             div_u[n_r-1,j,k] = (1/rp[n_r-1]*(u[n_r-2,j,k]) + 0.5*dri*(-u[n_r-2,j,k]) + 1/rp[n_r-1]*dphii*(v[n_r-1,j,k]-v[n_r-1,jm(j,n_phi),k]) + dzi*(w[n_r-1,j,k+1]-w[n_r-1,j,k]) )
-
     for k in range(n_z-2):
         div_u[0,0,k] = 1/ru[0]*0.5*(u[0,0,k]+u[0,int(n_phi/2),k]) + dri*(u[0,0,k]-u[0,int(n_phi/2),k]) + dzi*(w[0,0,k+1]-w[0,0,k])
         for j in range(n_phi):
             div_u[0,j,k]=div_u[0,0,k]
 
-# Randwerte für k
+    # Randwerte für k
     for i in range(1,n_r-1):
         rpi=1/rp[i]
-        for j in range(n_phi):
-            # Was soll ich für w nehmen?  
+        for j in range(n_phi):  
             div_u[i,j,n_z-1] = (rpi*0.5*(unew[i-1,j,n_z-1]+unew[i,j,n_z-1]) + dri*(unew[i,j,n_z-1]-unew[i-1,j,n_z-1]) +
-                            rpi*dphii*(vnew[i,j,n_z-1]-vnew[i,jm(j,n_phi),n_z-1]) + dzi*(-wnew[i,j,n_z-2]) )
+                            rpi*dphii*(vnew[i,j,n_z-1]-vnew[i,jm(j,n_phi),n_z-1]) + dzi*(-wnew[i,j,n_z-2]) )        # nehme für w(n_z-1) 0 an
             div_u[i,j,n_z-2] = (rpi*0.5*(unew[i-1,j,n_z-2]+unew[i,j,n_z-2]) + dri*(unew[i,j,n_z-2]-unew[i-1,j,n_z-2]) +
                             rpi*dphii*(vnew[i,j,n_z-2]-vnew[i,jm(j,n_phi),n_z-2]) + dzi*(wnew[i,j,n_z-2]-wnew[i,j,n_z-3]) )
 
-
+# Anpassung u,v,w und p
     for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
         rpi=1/rp[i]
         for j in range(n_phi):
@@ -290,7 +288,7 @@ while div_max < 1e10:
                 pnew[i,j,k] = p[i,j,k] - lamb*div_u[i,j,k]  #+/- lambda
                 unew[i,j,k] = u[i,j,k] + dt*lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k])    # +/- ?
                 vnew[i,j,k] = v[i,j,k] + dt*lamb*rpi*dphii*(div_u[i,jp(j,n_phi),k]-div_u[i,j,k])
-            for k in range(n_z-2):
+            for k in range(n_z-1):
                 wnew[i,j,k] = w[i,j,k] + dt*lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k])
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
     #Spezialfälle i=0, i=n_r-1
@@ -300,17 +298,11 @@ while div_max < 1e10:
             pnew[n_r-1,j,k] = p[n_r-1,j,k] - lamb*div_u[n_r-1,j,k]
             unew[0,j,k] = u[0,j,k] + dt*lamb*dri*(div_u[1,j,k]-div_u[0,j,k])    # +/- ?
             # u[n_r-1,..] existiert nicht
-            vnew[0,j,k] = v[0,j,k] + dt*lamb/rp[1]*dphii*(div_u[0,jp(j,n_phi),k]-div_u[0,j,k])       #nehme als Zwischenlösung rp[1] anstelle von rp[0]
+            vnew[0,j,k] = 0             # war: vnew[0,j,k] = v[0,j,k] - (lamb/ru[0]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))
             vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp(j,n_phi),k]-div_u[n_r-1,j,k])
         for k in range(n_z-2): 
             wnew[0,j,k] = w[0,j,k] + dt*lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k])
             wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k])
-    # Spezialfälle k=n_z-1
-    for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
-        rpi=1/rp[i]
-        for j in range(n_phi):
-            # nehme oberst mögliches z
-            wnew[i,j,n_z-2] = w[i,j,n_z-2] + dt*lamb*dri*(div_u[i,j,n_z-2]-div_u[i,j,n_z-3])
             
     print("während der Nachregelung", count)
     print("udiff", unew[:,1,1]-u[:,1,1])
