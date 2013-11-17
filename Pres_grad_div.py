@@ -6,8 +6,8 @@ import matplotlib as mp
 import matplotlib.pyplot as plt
 
 ## To do:
-##          - n_r-2: w,v ok
-##          - Funktion fuer jm, jp
+##         ok - n_r-2: w,v
+##         ok - Funktion fuer jm, jp
 ##          - falls nach anpassungen immer noch -> inf > u,v,w mit div_u statt grad(div_u)   
 
 
