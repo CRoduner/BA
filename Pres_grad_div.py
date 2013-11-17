@@ -6,9 +6,9 @@ import matplotlib as mp
 import matplotlib.pyplot as plt
 
 ## To do:
-##         ok - n_r-2: w,v
-##         ok - Funktion fuer jm, jp
-##          - falls nach anpassungen immer noch -> inf > u,v,w mit div_u statt grad(div_u)   
+##          - n_r-2: w,v
+##         ok - falls nach anpassungen immer noch -> inf > u,v,w mit div_u statt grad(div_u)
+##          - alle z Ableitungen kontrollieren!! (k+1) - (k-1) ??
 
 
 # u Radialkomponente der Geschwindigkeit, v Azimutalkomponente der Geschwindigkeit, w vertikale Komponente der Geschwindigkeit, p Druck
@@ -102,18 +102,17 @@ div_u = np.zeros((n_r,n_phi,n_z))
 
 ### Randwerte i=0, i=n_r-1 für v,p und i=n_r-1 für w (Werte noch nicht bestimmt)
 for j in range(n_phi):
-    for k in range (1,n_z):
+    for k in range (n_z):           # ab 0 oder nicht? -> kein Fehler ab 0
         vnew[n_r-1,j,k] = 0
         pnew[n_r-1,j,k] = p0
         vnew[0,j,k] = 0
         pnew[0,j,k] = p0
-    for k in range (1,n_z-1):
-#        wnew[0,j,k] = 0        # ?? Null hier ungünstig... :(
+    for k in range (n_z-1):
         wnew[n_r-1,j,k] = 0
 
 ### Spezialfälle i=0 für u,w und i=n_r-2 für u,v,w
 for j in range(n_phi):
-    for k in range(1,n_z-1):
+    for k in range(n_z-1):          # ab 0 oder nicht? -> kein Fehler ab 0
         rui=1/ru[0]
         unew[0,j,k] = u[0,j,k] + dt*(Reyi*(dri**2*(u[2,j,k]-2.*u[1,j,k]+u[0,j,k]) + rui**2*dphii**2*(u[0,jp(j,n_phi),k]-2.*u[0,j,k]+u[0,jm(j,n_phi),k]) - rui**2*u[0,j,k]  +
                                            dzi**2*(u[0,j,k+1]-2.*u[0,j,k]+u[0,j,k-1]) - rui**2*dphii*(v[1,j,k]+v[0,j,k]-v[1,jm(j,n_phi),k]-v[0,jm(j,n_phi),k])) +
@@ -167,9 +166,10 @@ for j in range(n_phi):
         vnew[i,j,0] = 0
         pnew[i,j,0] = p0
 ### Spezialfall k=0, k=n_z-2 für w und k=n_z-1 für u,v
-for i in range(1,n_r-1):
-    rpi=1/rp[i]
-    for j in range(n_phi):
+for j in range(n_phi):
+    for i in range(1, n_r-1):        # wieso bis n_r-1?? -> out of bounds sonst
+        rpi=1/rp[i]
+    
         wnew[i,j,0] = w[i,j,0] + dt*(Reyi*(dri**2*(w[i+1,j,0]-2.*w[i,j,0]+w[i-1,j,0]) + rpi**2*dphii**2*(w[i,jp(j,n_phi),0]-2.*w[i,j,0]+w[i,jm(j,n_phi),0]) +
                                            dzi**2*(w[i,j,2]-2.*w[i,j,1]+w[i,j,0])) +
                                      (Reyi*rpi-0.25*(u[i,j,0]+u[i-1,j,0]+u[i,j,1]+u[i-1,j,1]))*0.5*dri*(w[i+1,j,0]-w[i-1,j,0]) -
@@ -193,6 +193,16 @@ for i in range(1,n_r-1):
                                              0.25*(0+0+w[i,j,n_z-2]+w[i,jp(j,n_phi),n_z-2])*0.5*dzi*(v[i,j,n_z-1]-v[i,j,n_z-2]) - # Vorfaktor 0.5 oder 0.25 / w ganz aussen nul setzen bzw. vernachlässigen
                                              0.5*om*(u[i,j,n_z-1]+u[i-1,j,n_z-1]+u[i,jp(j,n_phi),n_z-1]+u[i-1,jp(j,n_phi),n_z-1]) - #
                                              rpi*dphii*(p[i,jp(j,n_phi),n_z-1]-p[i,j,n_z-1]) )
+        vnew[i,j,n_z-2] = v[i,j,n_z-2] + dt*(Reyi*(dri**2*(v[i+1,j,n_z-2]-2.*v[i,j,n_z-2]+v[i-1,j,n_z-2]) +
+                                                   rpi**2*dphii**2*(v[i,jp(j,n_phi),n_z-2]-2.*v[i,j,n_z-2]+u[i,jm(j,n_phi),n_z-2]) +
+                                                   dzi**2*(v[i,j,n_z-1]-2.*v[i,j,n_z-2]+v[i,j,n_z-3]) +
+                                                   rpi**2*dphii*(u[i,j,n_z-2]+u[i-1,j,n_z-2]-u[i,jp(j,n_phi),n_z-2]-u[i-1,jp(j,n_phi),n_z-2]) - rpi**2*v[i,j,n_z-2]) +
+                                             (Reyi*rpi-0.25*(u[i,j,n_z-2]+u[i-1,j,n_z-2]+u[i,jp(j,n_phi),n_z-2]+u[i-1,jp(j,n_phi),n_z-2]))*0.5*dri*(v[i+1,j,n_z-2]-v[i-1,j,n_z-2]) -
+                                             rpi*v[i,j,n_z-2]*0.25*(u[i,j,n_z-2]+u[i-1,j,n_z-2]+u[i,jp(j,n_phi),n_z-2]+u[i-1,jp(j,n_phi),n_z-2]) -
+                                             rpi*v[i,j,n_z-2]*0.5*dphii*(v[i,jp(j,n_phi),n_z-2]-v[i,jm(j,n_phi),n_z-2]) -
+                                             0.25*(w[i,j,n_z-3]+w[i,jp(j,n_phi),n_z-3]+w[i,j,n_z-2]+w[i,jp(j,n_phi),n_z-2])*0.5*dzi*(v[i,j,n_z-2]-v[i,j,n_z-3]) - # Vorfaktor 0.5 oder 0.25 / w ganz aussen nul setzen bzw. vernachlässigen
+                                             0.5*om*(u[i,j,n_z-2]+u[i-1,j,n_z-2]+u[i,jp(j,n_phi),n_z-2]+u[i-1,jp(j,n_phi),n_z-2]) - #
+                                             rpi*dphii*(p[i,jp(j,n_phi),n_z-2]-p[i,j,n_z-2]) )
 for i in range(1,n_r-2):
     rui=1/ru[i]
     for j in range(n_phi):
@@ -206,6 +216,16 @@ for i in range(1,n_r-2):
                                              0.25*(0+0+w[i,j,n_z-2]+w[i+1,j,n_z-2])*0.5*dzi*(u[i,j,n_z-1]-u[i,j,n_z-2]) + # Vorfaktor 0.5 oder 0.25 -> wie v
                                              0.5*om*(v[i,j,n_z-1]+v[i,jm(j,n_phi),n_z-1]+v[i+1,jm(j,n_phi),n_z-1]+v[i+1,j,n_z-1]) +
                                              (om**2)*ru[i] - dri*(p[i+1,j,n_z-1]-p[i,j,n_z-1]) )
+        unew[i,j,n_z-2] = u[i,j,n_z-2] + dt*(Reyi*(dri**2*(u[i+1,j,n_z-2]-2.*u[i,j,n_z-2]+u[i-1,j,n_z-2]) +
+                                                   rui**2*dphii**2*(u[i,jp(j,n_phi),n_z-2]-2.*u[i,j,n_z-2]+u[i,jm(j,n_phi),n_z-2]) +
+                                                   dzi**2*(u[i,j,n_z-1]-2.*u[i,j,n_z-2]+u[i,j,n_z-3]) -
+                                                   rui**2*dphii*(v[i+1,j,n_z-2]+v[i,j,n_z-2]-v[i+1,jm(j,n_phi),n_z-2]-v[i,jm(j,n_phi),n_z-2]) - rui**2*u[i,j,n_z-2]) +
+                                             (Reyi*rui-u[i,j,n_z-2])*0.5*dri*(u[i+1,j,n_z-2]-u[i-1,j,n_z-2]) -
+                                             rui*(0.25*(v[i,j,n_z-2]+v[i,jm(j,n_phi),n_z-2]+v[i+1,jm(j,n_phi),n_z-2]+v[i+1,j,n_z-2]))**2 -
+                                             rui*0.25*(v[i,j,n_z-2]+v[i,jm(j,n_phi),n_z-2]+v[i+1,jm(j,n_phi),n_z-2]+v[i+1,j,n_z-2])*0.5*dphii*(u[i,jp(j,n_phi),n_z-2]-u[i,jm(j,n_phi),n_z-2]) -
+                                             0.25*(w[i,j,n_z-3]+w[i+1,j,n_z-3]+w[i,j,n_z-2]+w[i+1,j,n_z-2])*0.5*dzi*(u[i,j,n_z-1]-u[i,j,n_z-3]) + # Vorfaktor 0.5 oder 0.25 -> wie v
+                                             0.5*om*(v[i,j,n_z-2]+v[i,jm(j,n_phi),n_z-2]+v[i+1,jm(j,n_phi),n_z-2]+v[i+1,j,n_z-2]) +
+                                             (om**2)*ru[i] - dri*(p[i+1,j,n_z-2]-p[i,j,n_z-2]) )
 
         
 ## allgemeiner Fall
@@ -221,7 +241,7 @@ for i in range(1,n_r-2):
                                          (Reyi*rui-u[i,j,k])*0.5*dri*(u[i+1,j,k]-u[i-1,j,k]) -
                                          rui*(0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k]))**2 -
                                          rui*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k])*0.5*dphii*(u[i,jp(j,n_phi),k]-u[i,jm(j,n_phi),k]) -
-                                         0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[i,j,k-1]) +
+                                         0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[i,j,k-1]) + # Wieso hier 1 und - 1??
                                          0.5*om*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k]) + (om**2)*ru[i] - dri*(p[i+1,j,k]-p[i,j,k]) )
 
             vnew[i,j,k] = v[i,j,k] + dt*(Reyi*(dri**2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + rpi**2*dphii**2*(v[i,jp(j,n_phi),k]-2.*v[i,j,k]+u[i,jm(j,n_phi),k]) +
