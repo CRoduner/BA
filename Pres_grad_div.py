@@ -243,6 +243,7 @@ u = unew.copy()
 v = vnew.copy()
 w = wnew.copy()
 
+print("mit grad(div(u))")
 print("u:", unew[:,1,1])
 print("v:", vnew[:,1,1])
 print("w:", wnew[:,1,1])
@@ -303,6 +304,7 @@ while div_max < 1e10:
         for k in range(n_z-2): 
             wnew[0,j,k] = w[0,j,k] + dt*lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k])
             wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k])
+    # werte für w[0,j,n_z-2],w[n_r-1,j,n_z-2] ??
             
     print("während der Nachregelung", count)
     print("udiff", unew[:,1,1]-u[:,1,1])
