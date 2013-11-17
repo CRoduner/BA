@@ -14,12 +14,12 @@ import matplotlib.pyplot as plt
 # u Radialkomponente der Geschwindigkeit, v Azimutalkomponente der Geschwindigkeit, w vertikale Komponente der Geschwindigkeit, p Druck
 
 pi=math.pi
-def jp(j, n_phi)
+def jp(j, n_phi):
     if j==n_phi-1:
         return 0
     else:
         return j+1
-def jm(j, n_phi)
+def jm(j, n_phi):
     if j==0:
         return n_phi-1
     else:
@@ -169,7 +169,7 @@ for j in range(n_phi):
 ### Spezialfall k=0, k=n_z-2 für w und k=n_z-1 für u,v
 for i in range(1,n_r-1):
     rpi=1/rp[i]
-    for j in range(n_phi)
+    for j in range(n_phi):
         wnew[i,j,0] = w[i,j,0] + dt*(Reyi*(dri**2*(w[i+1,j,0]-2.*w[i,j,0]+w[i-1,j,0]) + rpi**2*dphii**2*(w[i,jp(j,n_phi),0]-2.*w[i,j,0]+w[i,jm(j,n_phi),0]) +
                                            dzi**2*(w[i,j,2]-2.*w[i,j,1]+w[i,j,0])) +
                                      (Reyi*rpi-0.25*(u[i,j,0]+u[i-1,j,0]+u[i,j,1]+u[i-1,j,1]))*0.5*dri*(w[i+1,j,0]-w[i-1,j,0]) -
