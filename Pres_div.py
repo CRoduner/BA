@@ -242,6 +242,7 @@ u = unew.copy()
 v = vnew.copy()
 w = wnew.copy()
 
+print("ohne grad(div(u))")
 print("u:", unew[:,1,1])
 print("v:", vnew[:,1,1])
 print("w:", wnew[:,1,1])
@@ -250,7 +251,7 @@ div_max = np.amax(div_u)
 
 ## Drucknachregelung
 count=0
-#while (div_max > precision) or count=0:
+#while (div_max > precision) or count==0:
 while div_max < 1e10: 
 
 ### Divergenz von (u,v,w) auf p-Gitter
