@@ -186,7 +186,8 @@ for j in range(n_phi):
         vnew[i,j,n_z-1] = v[i,j,n_z-1] + dt*(Reyi*(dri**2*(v[i+1,j,n_z-1]-2.*v[i,j,n_z-1]+v[i-1,j,n_z-1]) +
                                                    rpi**2*dphii**2*(v[i,jp(j,n_phi),n_z-1]-2.*v[i,j,n_z-1]+u[i,jm(j,n_phi),n_z-1]) +
                                                    dzi**2*(v[i,j,n_z-1]-2.*v[i,j,n_z-2]+v[i,j,n_z-3]) +
-                                                   rpi**2*dphii*(u[i,j,n_z-1]+u[i-1,j,n_z-1]-u[i,jp(j,n_phi),n_z-1]-u[i-1,jp(j,n_phi),n_z-1]) - rpi**2*v[i,j,n_z-1]) +
+                                                   rpi**2*dphii*(u[i,j,n_z-1]+u[i-1,j,n_z-1]-u[i,jp(j,n_phi),n_z-1]-u[i-1,jp(j,n_phi),n_z-1]) -
+                                                   rpi**2*v[i,j,n_z-1]) +
                                              (Reyi*rpi-0.25*(u[i,j,n_z-1]+u[i-1,j,n_z-1]+u[i,jp(j,n_phi),n_z-1]+u[i-1,jp(j,n_phi),n_z-1]))*0.5*dri*(v[i+1,j,n_z-1]-v[i-1,j,n_z-1]) -
                                              rpi*v[i,j,n_z-1]*0.25*(u[i,j,n_z-1]+u[i-1,j,n_z-1]+u[i,jp(j,n_phi),n_z-1]+u[i-1,jp(j,n_phi),n_z-1]) -
                                              rpi*v[i,j,n_z-1]*0.5*dphii*(v[i,jp(j,n_phi),n_z-1]-v[i,jm(j,n_phi),n_z-1]) -
