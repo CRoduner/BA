@@ -280,28 +280,23 @@ while div_max < 1e10:
                             rpi*dphii*(vnew[i,j,n_z-2]-vnew[i,jm(j,n_phi),n_z-2]) + dzi*(wnew[i,j,n_z-2]-wnew[i,j,n_z-3]) )
 
 # Anpassung u,v,w und p
-    for i in range(1,n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
+    for i in range(n_r-1):    # kann nicht bei 0 starten, da rp[0]=0 => rpi=nan !
         rpi=1/rp[i]
         for j in range(n_phi):
             for k in range(n_z):
                 pnew[i,j,k] = p[i,j,k] - lamb*div_u[i,j,k]  #+/- lambda
-                unew[i,j,k] = u[i,j,k] + dt*lamb*dri*(div_u[i+1,j,k]-div_u[i,j,k])    # +/- ?
-                vnew[i,j,k] = v[i,j,k] + dt*lamb*rpi*dphii*(div_u[i,jp(j,n_phi),k]-div_u[i,j,k])
+                unew[i,j,k] = u[i,j,k] + dt*lamb*div_u[i,j,k]    # +/- ?
+                vnew[i,j,k] = v[i,j,k] + dt*lamb*div_u[i,j,k]
             for k in range(n_z-1):
-                wnew[i,j,k] = w[i,j,k] + dt*lamb*dri*(div_u[i,j,k+1]-div_u[i,j,k])
+                wnew[i,j,k] = w[i,j,k] + dt*lamb*div_u[i,j,k]
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
     #Spezialfälle i=0, i=n_r-1
     for j in range(n_phi):
         for k in range(n_z): 
-            pnew[0,j,k] = p[0,j,k] - lamb*div_u[0,j,k]  #+/- lambda
             pnew[n_r-1,j,k] = p[n_r-1,j,k] - lamb*div_u[n_r-1,j,k]
-            unew[0,j,k] = u[0,j,k] + dt*lamb*dri*(div_u[1,j,k]-div_u[0,j,k])    # +/- ?
-            # u[n_r-1,..] existiert nicht
-            vnew[0,j,k] = 0             # war: vnew[0,j,k] = v[0,j,k] - (lamb/ru[0]*dphii*(div_u[0,jp,k]-div_u[0,j,k]))
-            vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*lamb/rp[n_r-1]*dphii*(div_u[n_r-1,jp(j,n_phi),k]-div_u[n_r-1,j,k])
-        for k in range(n_z-2): 
-            wnew[0,j,k] = w[0,j,k] + dt*lamb*dri*(div_u[0,j,k+1]-div_u[0,j,k])
-            wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*lamb*dri*(div_u[n_r-1,j,k+1]-div_u[n_r-1,j,k])
+            vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*lamb*div_u[n_r-1,j,k]
+        for k in range(n_z-1): 
+            wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*lamb*div_u[n_r-1,j,k]
             
     print("während der Nachregelung", count)
     print("udiff", unew[:,1,1]-u[:,1,1])
