@@ -6,9 +6,9 @@ import matplotlib as mp
 import matplotlib.pyplot as plt
 
 ## To do:
-##          - n_r-2: w,v
+##         ok - n_r-2: w,v
 ##         ok - falls nach anpassungen immer noch -> inf > u,v,w mit div_u statt grad(div_u)
-##          - alle z Ableitungen kontrollieren!! (k+1) - (k-1) ??
+##          - alle Ableitungen kontrollieren!!
 
 
 # u Radialkomponente der Geschwindigkeit, v Azimutalkomponente der Geschwindigkeit, w vertikale Komponente der Geschwindigkeit, p Druck
@@ -289,9 +289,15 @@ v = vnew.copy()
 w = wnew.copy()
 
 print("mit grad(div(u))")
-print("u:", unew[:,1,1])
-print("v:", vnew[:,1,1])
-print("w:", wnew[:,1,1])
+print("u(r):", unew[:,1,1])
+print("u(phi):", unew[1,:,1])
+print("u(z):", unew[1,1,:])
+print("v(r):", vnew[:,1,1])
+print("v(phi):", vnew[1,:,1])
+print("v(z):", vnew[1,1,:])
+print("w(r):", wnew[:,1,1])
+print("w(phi):", wnew[1,:,1])
+print("w(z):", wnew[1,1,:])
 
 div_max = np.amax(div_u)
 
