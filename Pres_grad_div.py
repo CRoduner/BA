@@ -158,6 +158,7 @@ for k in range(1,n_z-2):
     for j in range(n_phi):
         wnew[0,j,k]=w[0,0,k]
 
+
 ### Randwerte k=0 für u,v,p (Werte noch nicht bestimmt)
 for j in range(n_phi):
     for i in range(n_r-1):
@@ -228,6 +229,29 @@ for i in range(1,n_r-2):
                                              0.5*om*(v[i,j,n_z-2]+v[i,jm(j,n_phi),n_z-2]+v[i+1,jm(j,n_phi),n_z-2]+v[i+1,j,n_z-2]) +
                                              (om**2)*ru[i] - dri*(p[i+1,j,n_z-2]-p[i,j,n_z-2]) )
 
+## doppelte Fälle i=0 und k=n_z-2
+rpi=1/(ru[0])
+wnew[0,0,n_z-2] = w[0,0,n_z-2] + dt*(Reyi*(dri**2*(w[1,0,n_z-2]-2.*w[0,0,n_z-2]+w[1,int(n_phi/2),n_z-2]) +                                       # + rpi**2*dphii**2*(w[0,jp,k]-2.*w[0,j,k]+w[0,jm,k]) +
+                                      dzi**2*(w[0,0,n_z-2]-2.*w[0,0,n_z-3]+w[0,0,n_z-4])) +
+                                (Reyi*rpi-0.5*(u[0,0,n_z-2]+u[0,int(n_phi/2),n_z-2]))*dri*(w[0,0,n_z-2]-w[0,int(n_phi/2),n_z-2]) -
+                                w[0,0,k]*0.5*dzi*(w[0,0,n_z-2]-w[0,0,n_z-3]) - dzi*(p[0,0,n_z-1]-p[0,0,n_z-2]) - g)
+for j in range(n_phi):
+    wnew[0,j,n_z-2]=w[0,0,n_z-2]
+
+    rui=1/ru[0]
+    unew[0,j,n_z-2] = u[0,j,n_z-2] + dt*(Reyi*(dri**2*(u[2,j,n_z-2]-2.*u[1,j,n_z-2]+u[0,j,n_z-2]) +
+                                               rui**2*dphii**2*(u[0,jp(j,n_phi),n_z-2]-2.*u[0,j,n_z-2]+u[0,jm(j,n_phi),n_z-2]) - rui**2*u[0,j,n_z-2]  +
+                                               dzi**2*(u[0,j,n_z-2]-2.*u[0,j,n_z-3]+u[0,j,n_z-4]) -
+                                               rui**2*dphii*(v[1,j,n_z-2]+v[0,j,n_z-2]-v[1,jm(j,n_phi),n_z-2]-v[0,jm(j,n_phi),n_z-2])) +
+                                         (Reyi*rui-u[0,j,n_z-2])*dri*(u[1,j,n_z-2]-u[0,j,n_z-2]) +
+                                         rui*(1/3.*(v[0,j,n_z-2]+v[1,jm(j,n_phi),n_z-2]+v[1,j,n_z-2]))**2 -
+                                         rui/3.*(v[0,j,n_z-2]+v[1,jm(j,n_phi),n_z-2]+v[1,j,n_z-2])*0.5*dphii*(u[0,jp(j,n_phi),n_z-2]-u[0,jm(j,n_phi),n_z-2]) -
+                                         0.25*(w[0,j,n_z-2]+w[1,j,n_z-2]+w[0,j,n_z-3]+w[1,j,n_z-3])*0.5*dzi*(u[0,j,n_z-1]-u[0,j,n_z-3]) +
+                                         0.5*om*(v[0,j,n_z-2]+v[0,jm(j,n_phi),n_z-2]+v[1,jm(j,n_phi),n_z-2]+v[1,j,n_z-2]) + (om**2)*ru[0] -
+                                         dri*(p[1,j,n_z-2]-p[0,j,n_z-2]) )
+
+    
+    
         
 ## allgemeiner Fall
 for i in range(1,n_r-2):
