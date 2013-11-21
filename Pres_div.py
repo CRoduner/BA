@@ -331,7 +331,7 @@ while div_max < 1e10:
             for k in range(n_z):
                 pnew[i,j,k] = p[i,j,k] - lamb*div_u[i,j,k]
                 unew[i,j,k] = u[i,j,k] + dt*lamb*0.5*(div_u[i,j,k]+div_u[i+1,j,k])  
-                vnew[i,j,k] = v[i,j,k] + dt*lamb*0.5*(div_u[i,j,k]+div_u[ijp(j),k])
+                vnew[i,j,k] = v[i,j,k] + dt*lamb*0.5*(div_u[i,j,k]+div_u[i,jp(j,n_phi),k])
             for k in range(n_z-1):
                 wnew[i,j,k] = w[i,j,k] + dt*lamb*0.5*(div_u[i,j,k]+div_u[i,j,k+1])
                 #print("p", i,j,k, pnew[i,j,k], div_u[i,j,k])
@@ -339,7 +339,7 @@ while div_max < 1e10:
     for j in range(n_phi):
         for k in range(n_z): 
             pnew[n_r-1,j,k] = p[n_r-1,j,k] - lamb*div_u[n_r-1,j,k]
-            vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*lamb*0.5*(div_u[n_r-1,j,k]+div_u[n_r-1,jp(j),k])
+            vnew[n_r-1,j,k] = v[n_r-1,j,k] + dt*lamb*0.5*(div_u[n_r-1,j,k]+div_u[n_r-1,jp(j,n_phi),k])
         for k in range(n_z-1): 
             wnew[n_r-1,j,k] = w[n_r-1,j,k] + dt*lamb*0.5*(div_u[n_r-1,j,k]+div_u[n_r-1,j,k+1])
             
