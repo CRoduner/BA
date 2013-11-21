@@ -211,7 +211,7 @@ for i in range(1,n_r-2):
                                                    rui**2*dphii**2*(u[i,jp(j,n_phi),n_z-1]-2.*u[i,j,n_z-1]+u[i,jm(j,n_phi),n_z-1]) +
                                                    dzi**2*(u[i,j,n_z-1]-2.*u[i,j,n_z-2]+u[i,j,n_z-3]) -
                                                    rui**2*dphii*(v[i+1,j,n_z-1]+v[i,j,n_z-1]-v[i+1,jm(j,n_phi),n_z-1]-v[i,jm(j,n_phi),n_z-1]) - rui**2*u[i,j,n_z-1]) +
-                                             (Reyi*rui-u[i,j,n_z-1])*0.5*dri*(u[i+1,j,n_z-1]-u[i-1,j,n_z-1]) -
+                                             (Reyi*rui-u[i,j,n_z-1])*0.5*dri*(u[i+1,j,n_z-1]-u[i-1,j,n_z-1]) +
                                              rui*(0.25*(v[i,j,n_z-1]+v[i,jm(j,n_phi),n_z-1]+v[i+1,jm(j,n_phi),n_z-1]+v[i+1,j,n_z-1]))**2 -
                                              rui*0.25*(v[i,j,n_z-1]+v[i,jm(j,n_phi),n_z-1]+v[i+1,jm(j,n_phi),n_z-1]+v[i+1,j,n_z-1])*0.5*dphii*(u[i,jp(j,n_phi),n_z-1]-u[i,jm(j,n_phi),n_z-1]) -
                                              0.25*(0+0+w[i,j,n_z-2]+w[i+1,j,n_z-2])*0.5*dzi*(u[i,j,n_z-1]-u[i,j,n_z-2]) + # Vorfaktor 0.5 oder 0.25 -> wie v
@@ -221,7 +221,7 @@ for i in range(1,n_r-2):
                                                    rui**2*dphii**2*(u[i,jp(j,n_phi),n_z-2]-2.*u[i,j,n_z-2]+u[i,jm(j,n_phi),n_z-2]) +
                                                    dzi**2*(u[i,j,n_z-1]-2.*u[i,j,n_z-2]+u[i,j,n_z-3]) -
                                                    rui**2*dphii*(v[i+1,j,n_z-2]+v[i,j,n_z-2]-v[i+1,jm(j,n_phi),n_z-2]-v[i,jm(j,n_phi),n_z-2]) - rui**2*u[i,j,n_z-2]) +
-                                             (Reyi*rui-u[i,j,n_z-2])*0.5*dri*(u[i+1,j,n_z-2]-u[i-1,j,n_z-2]) -
+                                             (Reyi*rui-u[i,j,n_z-2])*0.5*dri*(u[i+1,j,n_z-2]-u[i-1,j,n_z-2]) +
                                              rui*(0.25*(v[i,j,n_z-2]+v[i,jm(j,n_phi),n_z-2]+v[i+1,jm(j,n_phi),n_z-2]+v[i+1,j,n_z-2]))**2 -
                                              rui*0.25*(v[i,j,n_z-2]+v[i,jm(j,n_phi),n_z-2]+v[i+1,jm(j,n_phi),n_z-2]+v[i+1,j,n_z-2])*0.5*dphii*(u[i,jp(j,n_phi),n_z-2]-u[i,jm(j,n_phi),n_z-2]) -
                                              0.25*(w[i,j,n_z-3]+w[i+1,j,n_z-3]+w[i,j,n_z-2]+w[i+1,j,n_z-2])*0.5*dzi*(u[i,j,n_z-1]-u[i,j,n_z-3]) + # Vorfaktor 0.5 oder 0.25 -> wie v
@@ -262,7 +262,7 @@ for i in range(1,n_r-2):
             unew[i,j,k] = u[i,j,k] + dt*(Reyi*(dri**2*(u[i+1,j,k]-2.*u[i,j,k]+u[i-1,j,k]) + rui**2*dphii**2*(u[i,jp(j,n_phi),k]-2.*u[i,j,k]+u[i,jm(j,n_phi),k]) +
                                                dzi**2*(u[i,j,k+1]-2.*u[i,j,k]+u[i,j,k-1]) -
                                                rui**2*dphii*(v[i+1,j,k]+v[i,j,k]-v[i+1,jm(j,n_phi),k]-v[i,jm(j,n_phi),k]) - rui**2*u[i,j,k]) +
-                                         (Reyi*rui-u[i,j,k])*0.5*dri*(u[i+1,j,k]-u[i-1,j,k]) -
+                                         (Reyi*rui-u[i,j,k])*0.5*dri*(u[i+1,j,k]-u[i-1,j,k]) +
                                          rui*(0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k]))**2 -
                                          rui*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k])*0.5*dphii*(u[i,jp(j,n_phi),k]-u[i,jm(j,n_phi),k]) -
                                          0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[i,j,k-1]) + # Wieso hier 1 und - 1??
