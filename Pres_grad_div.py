@@ -87,6 +87,10 @@ phiv = np.linspace(dphi/2, 2*pi-dphi/2, n_phi)
 
 
 # matrix initialization
+#   u: i E [0,n_r-1), j E [0,n_phi), k E [0,n_z]
+#   v: i E [0,n_r), j E [0,n_phi), k E [0,n_z]
+#   w: i E [0,n_r), j E [0,n_phi), k E [0,n_z-1]
+#   p: i E [0,n_r), j E [0,n_phi), k E [0,n_z]
 u = np.zeros((n_r-1,n_phi,n_z))      
 unew = np.zeros((n_r-1,n_phi,n_z))
 
@@ -379,7 +383,7 @@ while div_max < 1e10:
     #print("v(r):", vnew[:,1,1])
     print("p(r):", pnew[:,1,1])
     print("div(r):", div_u[:,1,1])
-    print("div(phi):", div_u[1,:,1])
+    print("div(phi):", div_u[0,:,1])
     print("div(z):", div_u[1,1,:])
 print("nach der Nachregelung")
 print("div(r):", div_u[:,1,1])
