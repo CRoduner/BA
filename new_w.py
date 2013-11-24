@@ -102,7 +102,7 @@ w_c_new = np.zeros((n_z-1))
 
 p = p0*np.ones((n_r,n_phi,n_z))
 pnew = np.zeros((n_r,n_phi,n_z))
-p_c = p0*np.zeros((n_z))
+p_c = p0*np.ones((n_z))
 
 div_u = np.zeros((n_r+1,n_phi,n_z))
 
@@ -318,7 +318,6 @@ for j in range(n_phi):
     k=n_z-1
     rui=1/ru[i]
     rpi=1/rp[i]
-    # hier stimmt noch was nicht...
     unew[i,j,k] = u[i,j,k] + dt*(Reyi*(dri**2*(u[i+2,j,0]-2.*u[i+1,j,k]+u[i,j,k]) + rui**2*dphii**2*(u[i,jp(j,n_phi),k]-2.*u[i,j,k]+u[i,jm(j,n_phi),k]) +
                                        dzi**2*(u[i,j,k]-2.*u[i,j,k-1]+u[i,j,k-2]) -
                                        rui**2*dphii*0.5*(0+v[i,j,k]-0-v[i,jm(j,n_phi),k]) - rui**2*u[i,j,k] ) +
