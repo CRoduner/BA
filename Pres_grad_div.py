@@ -143,7 +143,7 @@ for j in range(n_phi):
                                              dri*(p[n_z-2,j,k]-p[n_z-3,j,k]) )
         i = n_r-2
         rpi=1/rp[n_r-2]
-        vnew[i,j,k] = v[i,j,k] + dt*(Reyi*(dri**2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + rpi**2*dphii**2*(v[i,jp(j,n_phi),k]-2.*v[i,j,k]+u[i,jm(j,n_phi),k]) +
+        vnew[i,j,k] = v[i,j,k] + dt*(Reyi*(dri**2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + rpi**2*dphii**2*(v[i,jp(j,n_phi),k]-2.*v[i,j,k]+v[i,jm(j,n_phi),k]) +
                                            dzi**2*(v[i,j,k+1]-2.*v[i,j,k]+v[i,j,k-1]) +
                                            rpi**2*dphii*(u[i,j,k]+u[i-1,j,k]-u[i,jp(j,n_phi),k]-u[i-1,jp(j,n_phi),k]) - rpi**2*v[i,j,k]) +
                                      (Reyi*rpi-0.25*(u[i,j,k]+u[i-1,j,k]+u[i,jp(j,n_phi),k]+u[i-1,jp(j,n_phi),k]))*0.5*dri*(v[i+1,j,k]-v[i-1,j,k]) -
@@ -195,7 +195,7 @@ for j in range(n_phi):
                                              w[i,j,n_z-2]*dzi*(w[i,j,n_z-2]-w[i,j,n_z-3]) - dzi*(p[i,j,n_z-2]-p[i,j,n_z-3]) - g )
 
         vnew[i,j,n_z-1] = v[i,j,n_z-1] + dt*(Reyi*(dri**2*(v[i+1,j,n_z-1]-2.*v[i,j,n_z-1]+v[i-1,j,n_z-1]) +
-                                                   rpi**2*dphii**2*(v[i,jp(j,n_phi),n_z-1]-2.*v[i,j,n_z-1]+u[i,jm(j,n_phi),n_z-1]) +
+                                                   rpi**2*dphii**2*(v[i,jp(j,n_phi),n_z-1]-2.*v[i,j,n_z-1]+v[i,jm(j,n_phi),n_z-1]) +
                                                    dzi**2*(v[i,j,n_z-1]-2.*v[i,j,n_z-2]+v[i,j,n_z-3]) +
                                                    rpi**2*dphii*(u[i,j,n_z-1]+u[i-1,j,n_z-1]-u[i,jp(j,n_phi),n_z-1]-u[i-1,jp(j,n_phi),n_z-1]) -
                                                    rpi**2*v[i,j,n_z-1]) +
@@ -206,7 +206,7 @@ for j in range(n_phi):
                                              0.5*om*(u[i,j,n_z-1]+u[i-1,j,n_z-1]+u[i,jp(j,n_phi),n_z-1]+u[i-1,jp(j,n_phi),n_z-1]) - #
                                              rpi*dphii*(p[i,jp(j,n_phi),n_z-1]-p[i,j,n_z-1]) )
         vnew[i,j,n_z-2] = v[i,j,n_z-2] + dt*(Reyi*(dri**2*(v[i+1,j,n_z-2]-2.*v[i,j,n_z-2]+v[i-1,j,n_z-2]) +
-                                                   rpi**2*dphii**2*(v[i,jp(j,n_phi),n_z-2]-2.*v[i,j,n_z-2]+u[i,jm(j,n_phi),n_z-2]) +
+                                                   rpi**2*dphii**2*(v[i,jp(j,n_phi),n_z-2]-2.*v[i,j,n_z-2]+v[i,jm(j,n_phi),n_z-2]) +
                                                    dzi**2*(v[i,j,n_z-1]-2.*v[i,j,n_z-2]+v[i,j,n_z-3]) +
                                                    rpi**2*dphii*(u[i,j,n_z-2]+u[i-1,j,n_z-2]-u[i,jp(j,n_phi),n_z-2]-u[i-1,jp(j,n_phi),n_z-2]) - rpi**2*v[i,j,n_z-2]) +
                                              (Reyi*rpi-0.25*(u[i,j,n_z-2]+u[i-1,j,n_z-2]+u[i,jp(j,n_phi),n_z-2]+u[i-1,jp(j,n_phi),n_z-2]))*0.5*dri*(v[i+1,j,n_z-2]-v[i-1,j,n_z-2]) -
@@ -279,7 +279,7 @@ for i in range(1,n_r-2):
                                          0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[i,j,k-1]) + # Wieso hier 1 und - 1??
                                          0.5*om*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k]) + (om**2)*ru[i] - dri*(p[i+1,j,k]-p[i,j,k]) )
 
-            vnew[i,j,k] = v[i,j,k] + dt*(Reyi*(dri**2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + rpi**2*dphii**2*(v[i,jp(j,n_phi),k]-2.*v[i,j,k]+u[i,jm(j,n_phi),k]) +
+            vnew[i,j,k] = v[i,j,k] + dt*(Reyi*(dri**2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + rpi**2*dphii**2*(v[i,jp(j,n_phi),k]-2.*v[i,j,k]+v[i,jm(j,n_phi),k]) +
                                                dzi**2*(v[i,j,k+1]-2.*v[i,j,k]+v[i,j,k-1]) +
                                                rpi**2*dphii*(u[i,j,k]+u[i-1,j,k]-u[i,jp(j,n_phi),k]-u[i-1,jp(j,n_phi),k]) - rpi**2*v[i,j,k]) +
                                          (Reyi*rpi-0.25*(u[i,j,k]+u[i-1,j,k]+u[i,jp(j,n_phi),k]+u[i-1,jp(j,n_phi),k]))*0.5*dri*(v[i+1,j,k]-v[i-1,j,k]) -
