@@ -133,13 +133,7 @@ for i in range(1,n_r-1):
                                          0.25*(w[i,j,k]+w[i,jp(j,n_phi),k]+w[i,j,k-1]+w[i,jp(j,n_phi),k-1])*0.5*dzi*(v[i,j,k+1]-v[i,j,k-1]) -
                                          0.5*om*(u[i,j,k]+u[i+1,j,k]+u[i,jp(j,n_phi),k]+u[i+1,jp(j,n_phi),k]) - #
                                          rpi*dphii*(p[i,jp(j,n_phi),k]-p[i,j,k]) )
-        for k in range(1,n_z-2):
-            wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i+1,j,k]-2.*w[i,j,k]+w[i-1,j,k]) +
-                                               rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                               dzi**2*(w[i,j,k+1]-2.*w[i,j,k]+w[i,j,k-1]) ) +
-                                         (Reyi*rpi-0.25*(u[i,j,k]+u[i+1,j,k]+u[i,j,k+1]+u[i+1,j,k+1]))*0.5*dri*(w[i+1,j,k]-w[i-1,j,k]) -
-                                         rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                         w[i,j,k]*0.5*dzi*(w[i,j,k+1]-w[i,j,k-1]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
+
 ##  Randwerte / Spezialfälle
 ### i=0 & i=n_r-1
 for j in range(n_phi):
@@ -181,25 +175,7 @@ for j in range(n_phi):
                                      2*om*(0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i-1,jm(j,n_phi),k]+v[i-1,j,k])) + (om**2)*ru[i] - dri*(p[i,j,k]-p[i-1,j,k]) )
     for k in range(n_z):                                 
         vnew[n_r-1,j,k] = 0         # am Tankrand muss die Azimutalgeschwindigkeit der des Tanks entsprechen, auf allen Höhen
-    for k in range(1,n_z-2):
-        # i=0
-        i=0
-        rpi=1/rp[i]
-        wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i+1,j,k]-2.*w[i,j,k]+w_c[k]) +
-                                           rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                           dzi**2*(w[i,j,k+1]-2.*w[i,j,k]+w[i,j,k-1]) ) +
-                                     (Reyi*rpi-0.25*(u[i,j,k]+u[i+1,j,k]+u[i,j,k+1]+u[i+1,j,k+1]))*0.5*dri*(w[i+1,j,k]-w_c[k]) -
-                                     rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                     w[i,j,k]*0.5*dzi*(w[i,j,k+1]-w[i,j,k-1]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
-        # i=n_r-1                   Wasser kann nicht raus, Wasser kann nicht rein => u=0 ganz am Rand und "aussen"
-        i=n_r-1
-        rpi=1/rp[i]
-        wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i,j,k]-2.*w[i-1,j,k]+w[i-2,j,k]) +
-                                           rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                           dzi**2*(w[i,j,k+1]-2.*w[i,j,k]+w[i,j,k-1]) ) +
-                                     (Reyi*rpi-0.25*(u[i,j,k]+0+u[i,j,k+1]+0))*dri*(w[i,j,k]-w[i-1,j,k]) -
-                                     rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                     w[i,j,k]*0.5*dzi*(w[i,j,k+1]-w[i,j,k-1]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
+
 ### k=0 und k=n_z-1 (für u,v) und k=n_z-2 (für w)
 for j in range(n_phi):                                   
     for i in range(1,n_r-1):
@@ -225,13 +201,7 @@ for j in range(n_phi):
                                      0.25*(w[i,j,k]+w[i,jp(j,n_phi),k]+0+0)*dzi*(v[i,j,k+1]-v[i,j,k]) -
                                      0.5*om*(u[i,j,k]+u[i+1,j,k]+u[i,jp(j,n_phi),k]+u[i+1,jp(j,n_phi),k]) - #
                                      rpi*dphii*(p[i,jp(j,n_phi),k]-p[i,j,k]) )
-        
-        wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i+1,j,k]-2.*w[i,j,k]+w[i-1,j,k]) +
-                                           rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                           dzi**2*(w[i,j,k+2]-2.*w[i,j,k+1]+w[i,j,k]) ) +
-                                     (Reyi*rpi-0.25*(u[i,j,k]+u[i+1,j,k]+u[i,j,k+1]+u[i+1,j,k+1]))*0.5*dri*(w[i+1,j,k]-w[i-1,j,k]) -
-                                     rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                     w[i,j,k]*dzi*(w[i,j,k+1]-w[i,j,k]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
+
         # k=k_max                   Wasser kann nicht raus, Wasser kann nicht rein => w=0 ganz oben am Rand und "aussen"? -> Nein
         k=n_z-1
         unew[i,j,k] = u[i,j,k] + dt*(Reyi*(dri**2*(u[i+1,j,k]-2.*u[i,j,k]+u[i-1,j,k]) + rui**2*dphii**2*(u[i,jp(j,n_phi),k]-2.*u[i,j,k]+u[i,jm(j,n_phi),k]) +
@@ -252,14 +222,6 @@ for j in range(n_phi):
                                      0.25*(w[i,j,k-1]+w[i,jp(j,n_phi),k-1]+0+0)*dzi*(v[i,j,k]-v[i,j,k-1]) -
                                      0.5*om*(u[i,j,k]+u[i+1,j,k]+u[i,jp(j,n_phi),k]+u[i+1,jp(j,n_phi),k]) - #
                                      rpi*dphii*(p[i,jp(j,n_phi),k]-p[i,j,k]) )
-
-        k=n_z-2
-        wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i+1,j,k]-2.*w[i,j,k]+w[i-1,j,k]) +
-                                           rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                           dzi**2*(w[i,j,k]-2.*w[i,j,k-1]+w[i,j,k-2]) ) +
-                                     (Reyi*rpi-0.25*(u[i,j,k]+u[i+1,j,k]+u[i,j,k+1]+u[i+1,j,k+1]))*0.5*dri*(w[i+1,j,k]-w[i-1,j,k]) -
-                                     rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                     w[i,j,k]*dzi*(w[i,j,k]-w[i,j,k-1]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
 ### doppelte Randfälle
 for j in range(n_phi):
     # i=0, k=0
@@ -285,13 +247,7 @@ for j in range(n_phi):
                                  0.25*(w[i,j,k]+w[i,jp(j,n_phi),k]+0+0)*dzi*(v[i,j,k+1]-v[i,j,k]) -
                                  0.5*om*(u[i,j,k]+u[i+1,j,k]+u[i,jp(j,n_phi),k]+u[i+1,jp(j,n_phi),k]) - #
                                  rpi*dphii*(p[i,jp(j,n_phi),k]-p[i,j,k]) )
-    
-    wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i+2,j,k]-2.*w[i+1,j,k]+w[i,j,k]) +
-                                       rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                       dzi**2*(w[i,j,k+2]-2.*w[i,j,k+1]+w[i,j,k]) ) +
-                                 (Reyi*rpi-0.25*(u[i,j,k]+u[i+1,j,k]+u[i,j,k+1]+u[i+1,j,k+1]))*dri*(w[i+1,j,k]-w[i,j,k]) -
-                                 rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                 w[i,j,k]*dzi*(w[i,j,k+1]-w[i,j,k]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
+
     # i=i_max, k=0
     i=n_r-1
     k=0
@@ -306,13 +262,7 @@ for j in range(n_phi):
                                  0.25*(w[i,j,k]+w[i-1,j,k]+0+0)*dzi*(u[i,j,k]-u[i,j,k-1]) +
                                  2*om*(0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i-1,jm(j,n_phi),k]+v[i-1,j,k])) + (om**2)*ru[i] - dri*(p[i,j,k]-p[i-1,j,k]) )  
    # vnew[i,j,k] = 0
-    
-    wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i,j,k]-2.*w[i-1,j,k]+w[i-2,j,k]) +
-                                       rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                       dzi**2*(w[i,j,k+2]-2.*w[i,j,k+1]+w[i,j,k]) ) +
-                                 (Reyi*rpi-0.25*(u[i,j,k]+0+u[i,j,k+1]+0))*dri*(w[i,j,k]-w[i-1,j,k]) -
-                                 rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                 w[i,j,k]*dzi*(w[i,j,k+1]-w[i,j,k]) - dzi*(p[i,j,k+1]-p[i,j,k]) - g )
+
     # i=0, k=kmax
     i=0
     k=n_z-1
@@ -336,13 +286,7 @@ for j in range(n_phi):
                                  0.25*(w[i,j,k-1]+w[i,jp(j,n_phi),k-1]+0+0)*dzi*(v[i,j,k]-v[i,j,k-1]) -
                                  0.5*om*(u[i,j,k]+u[i+1,j,k]+u[i,jp(j,n_phi),k]+u[i+1,jp(j,n_phi),k]) - #
                                  rpi*dphii*(p[i,jp(j,n_phi),k]-p[i,j,k]) )
-    k=n_z-2
-    wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i+2,j,k]-2.*w[i+1,j,k]+w[i,j,k]) +
-                                       rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                       dzi**2*(w[i,j,k]-2.*w[i,j,k-1]+w[i,j,k-2]) ) +
-                                 (Reyi*rpi-0.25*(u[i,j,k]+u[i+1,j,k]+u[i,j,k+1]+u[i+1,j,k+1]))*dri*(w[i+1,j,k]-w[i,j,k]) -
-                                 rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                 w[i,j,k]*dzi*(w[i,j,k]-w[i,j,k-1]) - dzi*(p[i,j,k]-p[i,j,k-1]) - g )
+
     # i=i_max, k=k_max
     i=n_r-1
     k=n_z-1
@@ -357,23 +301,30 @@ for j in range(n_phi):
                                  0.25*(0+0+w[i,j,k-1]+w[i-1,j,k-1])*dzi*(u[i,j,k]-u[i,j,k-1]) +
                                  2*om*(0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i-1,j,k]+v[i-1,jm(j,n_phi),k])) + (om**2)*ru[i] - dri*(p[i,j,k]-p[i-1,j,k]) )
     #vnew[i,j,k] = 0
-    
-    k=n_z-2
-    wnew[i,j,k] = w[i,j,k] + dt*(Reyi*(dri**2*(w[i,j,k]-2.*w[i-1,j,k]+w[i-2,j,k]) +
-                                       rpi**2*dphii**2*(w[i,jp(j,n_phi),k]-2.*w[i,j,k]+w[i,jm(j,n_phi),k]) +
-                                       dzi**2*(w[i,j,k]-2.*w[i,j,k-1]+w[i,j,k-2]) ) +
-                                 (Reyi*rpi-0.25*(u[i,j,k]+0+u[i,j,k+1]+0))*dri*(w[i,j,k]-w[i-1,j,k]) -
-                                 rpi*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i,j,k+1]+v[i,jm(j,n_phi),k+1])*0.5*dphii*(w[i,jp(j,n_phi),k]-w[i,jm(j,n_phi),k]) -
-                                 w[i,j,k]*dzi*(w[i,j,k]-w[i,j,k-1]) - 0.5*dzi*(p[i,j,k+1]-p[i,j,k-1]) - g )
 
+### Berechung von w aus u,v
+for j in range(n_phi):
+    for k in range(n_z-1):
+        for i in range(n_r-1):
+            rui=1/ru[i]
+            rpi=1/rp[i]
+    
+            wnew[i,j,k] = w[i,j,k] - dz*(rpi*0.25*(unew[i,j,k]+unew[i,j,k+1]+unew[i+1,j,k]+unew[i+1,j,k+1]) +
+                                         dri*0.5*(unew[i+1,j,k]+unew[i+1,j,k+1]-unew[i,j,k]-unew[i,j,k+1]) +
+                                         dphii*0.5*(vnew[i,jp(j,n_phi),k]+vnew[i,jp(j,n_phi),k+1]-vnew[i,j,k]-vnew[i,j,k+1]) )
+        i=n_r-1
+        w[i,j,k] = w[i,j,k] - dz*(rpi*0.25*(unew[i,j,k]+unew[i,j,k+1]+0+0) +
+                                         dri*0.5*(0+0-unew[i,j,k]-unew[i,j,k+1]) +
+                                         dphii*0.5*(vnew[i,jp(j,n_phi),k]+vnew[i,jp(j,n_phi),k+1]-vnew[i,j,k]-vnew[i,j,k+1]) )
+    
 ### neues w im Zentrum
 for k in range(n_z-1):
     rui=1/ru[0]         # nehme ru, da dies näher an der Mitte ist
     rpi=1/rp[0]
     i=0
-    j=0                 # es ist egal, was ich für j wähle
-    w_c_new[k] = w_c[k] - dz*(rui*0.25*(u[i,j,k]+u[i,j+int(n_phi/2),k]+u[i,j,k+1]+u[i,j+int(n_phi/2),k+1]) +
-                              dri*0.5*(u[i,j,k]+u[i,j,k+1]+u[i,j-u[i,j-int(n_phi/2),k]-int(n_phi/2),k+1]) + 0) # v im Mittelpunkt ist 0, phi-Ableitung im Mittelpunkt macht keinen Sinn
+    j=1                 # es ist egal, was ich für j wähle
+    w_c_new[k] = w_c[k] - dz*(rui*0.25*(unew[i,j,k]+unew[i,j+int(n_phi/2),k]+unew[i,j,k+1]+unew[i,j+int(n_phi/2),k+1]) +
+                              dri*0.5*(unew[i,j,k]+unew[i,j,k+1]+unew[i,j-unew[i,j-int(n_phi/2),k]-int(n_phi/2),k+1]) + 0) # v im Mittelpunkt ist 0, phi-Ableitung im Mittelpunkt macht keinen Sinn
 
 u = unew.copy()
 v = vnew.copy()
@@ -447,12 +398,12 @@ while div_max < 1e10:
     for k in range(n_z-1):
         w_c_new[k] = w_c[k] + dt*lamb*dri*(div_u[0,0,k+1]-div_u[0,0,k])
             
+    print("während der Nachregelung", count)
     print("p(r):", pnew[:,1,1])
     print("div(r):", div_u[:,1,1])
     print("div(phi):", div_u[0,:,1])
     print("div(z):", div_u[1,1,:])
 
-    print("während der Nachregelung", count)
     print("udiff", unew[:,1,1]-u[:,1,1])
     print("vdiff", vnew[:,1,1]-v[:,1,1])
     print("wdiff", wnew[:,1,1]-w[:,1,1])
