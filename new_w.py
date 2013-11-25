@@ -367,13 +367,18 @@ for j in range(n_phi):
                                  w[i,j,k]*dzi*(w[i,j,k]-w[i,j,k-1]) - 0.5*dzi*(p[i,j,k+1]-p[i,j,k-1]) - g )
 
 ### neues w im Zentrum
-##for k in range(n_z-1):
-##    w_c_new[k] = ??
+for k in range(n_z-1):
+    rui=1/ru[0]         # nehme ru, da dies näher an der Mitte ist
+    rpi=1/rp[0]
+    i=0
+    j=0                 # es ist egal, was ich für j wähle
+    w_c_new[k] = w_c[k] - dz*(rui*0.25*(u[i,j,k]+u[i,j+int(n_phi/2),k]+u[i,j,k+1]+u[i,j+int(n_phi/2),k+1]) +
+                              dri*0.5*(u[i,j,k]+u[i,j,k+1]+u[i,j-u[i,j-int(n_phi/2),k]-int(n_phi/2),k+1]) + 0) # v im Mittelpunkt ist 0, phi-Ableitung im Mittelpunkt macht keinen Sinn
 
 u = unew.copy()
 v = vnew.copy()
 w = wnew.copy()
-#w_c = w_c_new.copy()
+w_c = w_c_new.copy()
 
 print("mit grad(div(u))")
 print("u(r):", unew[:,1,1])
@@ -424,7 +429,7 @@ while div_max < 1e10:
     for j in range(n_phi):
         div_u[0,j,0] = div_u[0,0,0]
         div_u[0,j,n_z-1] = div_u[0,0,n_z-1]
-        div_u[n_r,j,0] = 1/rp[n_r-1]*(u[n_r-1,j,0]+0) + dri*(-u[n_r-1,j,0]) + 1/rp[n_r-1]*dphii*(v[n_r-1,j,0]-v[n_r-1,jm(j,n_phi),0]) +dzi*(w[n_r-1,j,0])
+        div_u[n_r,j,0] = 1/rp[n_r-1]*(u[n_r-1,j,0]+0) + dri*(0-u[n_r-1,j,0]) + 1/rp[n_r-1]*dphii*(v[n_r-1,j,0]-v[n_r-1,jm(j,n_phi),0]) +dzi*(w[n_r-1,j,0])
         div_u[n_r,j,n_z-1] = (1/rp[n_r-1]*(u[n_r-1,j,n_z-1]+0) + dri*(-u[n_r-1,j,n_z-1]) + 1/rp[n_r-1]*dphii*(v[n_r-1,j,n_z-1]-v[n_r-1,jm(j,n_phi),n_z-1]) +
                               dzi*(-w[n_r-1,j,n_z-2]) )
 
