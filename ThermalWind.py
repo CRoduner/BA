@@ -16,8 +16,6 @@ def jm(j, n_phi):
         return n_phi-1
     else:
         return j-1
-def sin(j):
-    return math.sin(j*2*pi/n_phi)
 
 
 #   Dimensions and fixed stuff
@@ -76,8 +74,8 @@ for i in range(n_r):
             T[i,j,k] = (i+1)*dT
             T[n_r,j,k] = (n_r+1)*dT
             
-            unew[i,j,k] = u[i,j,k] - dz*(0.5*a*g/(om*sin(j+0.5)*r[i])*dphii*(T[i,jp(j,n_phi),k]-T[i,j,k]))
-            vnew[i,j,k] = v[i,j,k] + dz*(0.5*a*g/(om*(sin(j)+0.0001))*dri*(T[i+1,j,k]-T[i,j,k]))                # Problem mit sin(j) -> div by 0
+            unew[i,j,k] = u[i,j,k] - dz*(0.5*a*g/(om*r[i])*dphii*(T[i,jp(j,n_phi),k]-T[i,j,k]))
+            vnew[i,j,k] = v[i,j,k] + dz*(0.5*a*g/om*dri*(T[i+1,j,k]-T[i,j,k]))                # Problem mit sin(j) -> div by 0
             
 print("u:", unew)
 print("v:", vnew)
