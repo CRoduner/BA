@@ -87,10 +87,10 @@ phiv = np.linspace(dphi/2, 2*pi-dphi/2, n_phi)
 
 
 # matrix initialization
-#   u: i E [0,n_r-1), j E [0,n_phi), k E [0,n_z]
-#   v: i E [0,n_r), j E [0,n_phi), k E [0,n_z]
-#   w: i E [0,n_r), j E [0,n_phi), k E [0,n_z-1]
-#   p: i E [0,n_r), j E [0,n_phi), k E [0,n_z]
+#   u: i E [0,n_r-1),   j E [0,n_phi),  k E [0,n_z]
+#   v: i E [0,n_r),     j E [0,n_phi),  k E [0,n_z]
+#   w: i E [0,n_r),     j E [0,n_phi),  k E [0,n_z-1]
+#   p: i E [0,n_r),     j E [0,n_phi),  k E [0,n_z]
 u = np.zeros((n_r-1,n_phi,n_z))      
 unew = np.zeros((n_r-1,n_phi,n_z))
 
@@ -276,7 +276,7 @@ for i in range(1,n_r-2):
                                          (Reyi*rui-u[i,j,k])*0.5*dri*(u[i+1,j,k]-u[i-1,j,k]) +
                                          rui*(0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k]))**2 -
                                          rui*0.25*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k])*0.5*dphii*(u[i,jp(j,n_phi),k]-u[i,jm(j,n_phi),k]) -
-                                         0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[i,j,k-1]) + # Wieso hier 1 und - 1??
+                                         0.25*(w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1])*0.5*dzi*(u[i,j,k+1]-u[i,j,k-1]) +
                                          0.5*om*(v[i,j,k]+v[i,jm(j,n_phi),k]+v[i+1,jm(j,n_phi),k]+v[i+1,j,k]) + (om**2)*ru[i] - dri*(p[i+1,j,k]-p[i,j,k]) )
 
             vnew[i,j,k] = v[i,j,k] + dt*(Reyi*(dri**2*(v[i+1,j,k]-2.*v[i,j,k]+v[i-1,j,k]) + rpi**2*dphii**2*(v[i,jp(j,n_phi),k]-2.*v[i,j,k]+v[i,jm(j,n_phi),k]) +
