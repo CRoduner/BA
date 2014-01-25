@@ -1,0 +1,320 @@
+\documentclass[12pt, a4paper, twoside]{article}
+\setlength{\hoffset}{-30pt}
+\setlength{\textwidth}{450pt}
+\setlength{\topmargin}{0pt}
+%\usepackage[margin=100pt]{geometry}
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}  %würde ä's über a's schiebeb
+%\usepackage[lmodern]
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphicx}
+
+\usepackage{enumerate}
+\usepackage[lofdepth,lotdepth]{subfig}
+\usepackage[justification=centering]{caption}
+\usepackage{url}
+%\usepackage{here}
+\lstset{
+  language=C++,
+  basicstyle=\footnotesize,
+  %  numbers=left,                   % where to put the line-numbers
+  stepnumber=1,                   % the step between two line-numbers.        
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=true,         % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                 % show the filename of files included with \lstinputlisting;
+  keywordstyle=\bfseries\color[rgb]{0.7,0.1,0.3}, % coloring
+  commentstyle=\color[rgb]{0.133,0.545,0.133}, % coloring
+  stringstyle=\color[rgb]{1,0,0}, % coloring
+  }
+
+
+
+\begin{document}
+
+\begin{center}
+\Large{Philosophisch-Naturwissenschafftliche Fakultät}\\
+\Large{University of Bern}\\
+\end{center}
+
+
+\begin{center}
+\Large{Climate and Environmental Physics}
+\end{center}
+\begin{verbatim}
+
+
+
+\end{verbatim}
+\begin{center}
+\large{Bachelor Thesis on}
+\end{center}
+\begin{verbatim}
+
+\end{verbatim}
+\begin{center}
+\textbf{\Large{Simulation of Ocean Dynamics in a Water Tank}}\\
+\end{center}
+
+\begin{figure}[h]
+ \centering
+ \includegraphics[width=0.2\textwidth]{Title.JPG}
+\end{figure}
+
+\begin{verbatim}
+
+
+
+\end{verbatim}
+
+\begin{center}
+\begin{tabular}{llll}
+
+\textbf{Author:} & & Cattia Roduner& \\
+\textbf{Matriculation Number:} & & 10-120-335& \\
+& & \\
+\textbf{Date:} & & \today &\\
+& & \\
+\textbf{Advisor:} & & Patrik Pfister, Prof. Dr. Thomas Stocker &\\
+
+\end{tabular}
+
+\end{center}
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\abstract
+The goal of this thesis is to ...
+
+\newpage
+\tableofcontents
+\newpage
+
+
+\section{Introduction}
+I have no idea what to write here...
+
+\newpage
+
+\section{Physical background}
+
+	\subsection{Navier-Stokes and Continuity Equation}
+		
+		
+		The state of a fluid at any time is defined by six key variables:
+		The velocity of the fluid $\vec{u}=(u,v,w)$; pressure $p$; temperature $T$ and specific humidity in the atmosphere or salinity in the ocean. Since we are looking at fresh water in a tank, our fluid is defined by the velocity, pressure and temperature. The forces on an elementary parcel of such a fluid, following the parcel, are described by the equation of motion	or the Navier-Stokes equation
+		\begin{equation}
+			\rho \frac{D\vec{u}}{Dt} = -\rho g \hat{\vec{z}} - \vec{\nabla} p + \rho \vec{\mathcal{F}}
+			\label{eq:Simple NSG}
+		\end{equation} 
+		
+		where the first term on the right hand side stands for the effect of gravity and $\rho$ is the density; the second term is the pressure gradient and $\vec{\mathcal{F}}$ are frictional terms.
+		
+		On the left hand side we have the Lagrangian (or total) derivative:
+		\begin{equation}
+			\frac{D}{Dt} = \frac{\partial}{\partial t} + \vec{u}.\vec{\nabla}.
+			\label{eq:Lag Dev}
+		\end{equation} 
+		
+		
+		Since no mass should be given away or come in to our fluid, and no mass is converted to energy, our fluid also needs to follow conservation of mass, which leads to the continuity equation:
+		\begin{equation}
+			\frac{D\rho}{Dt} + \rho \vec{\nabla} \vec{u} = 0
+			\label{eq:Continuity}
+		\end{equation}
+		
+		The water we are studying, forms an incompressible flow, the density is constant in time % schlechte Formulierung
+		 $\frac{\partial\rho}{\partial t} =0 $, therefore we can simplify the continuity equation (\ref{eq:Continuity}) to
+		\begin{equation}
+			\vec{\nabla} \vec{u} = 0
+			\label{eq:nondivergence}
+		\end{equation}
+		which gives us a non-divergent flow.
+		
+		The evolution of temperature is governed by the thermodynamic equation
+		\begin{equation}
+			\frac{DQ}{Dt} = c_p \frac{DT}{Dt} - \frac{1}{\rho} \frac{Dp}{Dt}
+			\label{eq:Thermodyn}
+		\end{equation}
+		$\frac{DQ}{Dt}$ is known as diabatic heating rate per unit mass. % Hier evtl. noch etwas bla bla
+		
+		% Dieser Abschnitt ist vollständig aus Plumb-Buch (S.84ff)
+		
+		\subsubsection{Equation of motion in a rotating frame}		% Maybe as sub- instead of subsubsection
+			To be used in our set up Equation (\ref{eq:Simple NSG}) needs to be transformed in to a rotating reference frame. We start by the relation of the velocity in the inertial frame $\vec{u}_{in}$ and the velocity in the rotating frame $\vec{u}_{rot}$
+			\begin{equation}
+				\vec{u}_{in} = \vec{u}_{rot} + \vec{\Omega}\times\vec{r}
+				\label{eq:Velocity Frames}
+			\end{equation}
+			
+			where $\vec{r}$ is the position vector of a parcel in the rotating frame, and $\vec{\Omega}$ is the rotation vector of the rotating frame.
+			
+			Using the transformation rule % given in Alan-Plumb-Book (page 94)
+			\begin{equation}
+				\left(\frac{D\vec{u}_{in}}{Dt}\right)_{in} = \left(\frac{D\vec{u}_{rot}}{Dt}\right)_{rot} + 2\vec{\Omega}\times\vec{u}_{rot} + \vec{\Omega}\times\vec{\Omega}\times\vec{r}
+				\label{eq: Lag Dev Rot}
+			\end{equation}
+			
+			we get the Navier-Stokes equation in a rotating frame:
+			
+			\begin{eqnarray}
+				\frac{\partial\vec{u}}{\partial t}
+				= - \left(\vec{u}\cdot\vec{\nabla}\right)\vec{u} - 2\vec{\Omega}\times\vec{u} - \vec{\Omega}\times\vec{\Omega}\times\vec{r} - g\hat{\vec{z}} - \frac{1}{\rho}\vec{\nabla}p + \vec{\mathcal{F}}
+				\nonumber \\
+				= \underbrace{\nu\Delta\vec{u}}_{1} - \underbrace{\left(\vec{u}\cdot\vec{\nabla}\right)\vec{u}}_{2} - \underbrace{2\vec{\Omega}\times\vec{u}}_{3}- \underbrace{\vec{\Omega}\times\vec{\Omega}\times\vec{r}}_{4} - \underbrace{g\hat{\vec{z}}}_{5} - \underbrace{\frac{1}{\rho}\vec{\nabla}p}_{6}
+				\label{eq: NSG}
+			\end{eqnarray}
+			
+			Because we will stay in the rotating frame now, the subscripts ``rot" have been dropped for better readability. The different terms in this equation are:
+			
+				\begin{enumerate}
+					\item Frictional effects with kinematic viscosity $\nu$
+					\item Advection (from the Lagrangian derivative)
+					\item Coriolis acceleration
+					\item Centrifugal acceleration
+					\item Pressure gradient
+					\item Gravity effects
+				\end{enumerate}
+			
+			Now this is a non-linear time-space-coupled, partial differential equation of 2nd order (in space), which cannot be solved analytically and has to be treated numerically.
+			
+		\subsubsection{Non-dimensionalization}
+			
+			It is better to have the equation in a non-dimensionalized version. Starting off with choosing a typical length $L$ and a typical velocity $U$ as references.
+			
+			\begin{equation}
+			u_i = U \cdot {u_i}^* \quad \quad x_i = = L \cdot {x_i}^*
+			\nonumber
+			\end{equation}
+			
+			where ${u_i}^*$ and ${x_i}^*$ are the dimensionless variables. Inserting this in  the equation of motion (\ref{eq: NSG}) in tensor notation gives us the dimensionless versions of the other variables
+			
+			\begin{equation}
+			t^* = \frac{U}{L} t , \quad p^* = \frac{1}{U^2\rho} p , \quad {\Omega_j}^* = \frac{L}{U} \Omega_j , \quad g^* = \frac{L}{U^2} g
+			\nonumber
+			\end{equation}
+			
+			and therefore the non-dimensionalized equation of motion in tensor notation:
+			
+			\begin{eqnarray}
+			{\partial_t}^*{u_i}^* &=& \frac{1}{Re}{\partial_j}^*{\partial_j}^*{u_i}^* - {u_j}^*{\partial_j}^*{u_i}^* -{\partial_i}^*p^* - g^*\hat{z}_i 
+			\nonumber \\
+			&&- 2\epsilon_{ijk}{\Omega_j}^*{u_k}^* - \epsilon_{ijk}\epsilon_{klm}{\Omega_j}^*{\Omega_l}^*{r_m}^*
+			\label{eq:NonDim NSG}
+			\end{eqnarray}
+			
+			where we use Einstein notation and where $Re$ is the Reynolds number $Re = \frac{U\cdot L}{\nu}$.
+	
+	\subsection{Hydrostatic Balance} % Do I need this chapter?
+		If we take a look at the vertical component of the equation of motion in a non-rotating frame (\ref{eq:Simple NSG}):
+		
+		\begin{eqnarray}
+		\frac{\partial w}{\partial t} = - u \frac{\partial w}{\partial x} - v \frac{\partial w}{\partial y} - w \frac{\partial w}{\partial z} - \frac{1}{\rho} \frac{\partial p}{\partial z} - g + \mathcal{F}_z
+		\label{eq:Simple NSG z}
+		\end{eqnarray}
+		
+		and if friction and the vertical acceleration $\frac{Dw}{Dt}$ are negligible, we obtain
+		\begin{equation}
+		\frac{\partial p}{\partial z} = -\rho g
+		\label{eq:Hydrostat Balance}
+		\end{equation}
+	
+		which is the equation of hydrostatic balance. This is a good approximation for large-scale systems with weak vertical motions but it is not suitable for our case.
+		
+	\subsection{Geostrophic Balance}
+		%We assume that we already have a solid body rotation in ou system, which means that the velocity of our fluid in the rotating reference frame equals zero, $\vec{u} = 0$.
+		Geostrophic balance is the state that occurs, when the pressure gradient is balanced by the Coriolis term. It occurs in a stationary system ($\frac{D\vec{u}}{Dt}=0$) without friction and gravity.
+		
+		-> read a lot more about it!!
+	
+		\subsubsection{Thermal Wind}
+			Weee, that's the thing I was able to do
+
+	\newpage		
+\section{Numerical Theoretical Background}
+	\subsection{Staggered Grid}
+		To discretize our problem, we need to discretize our tank first. Because we were expecting a lot of time steps and due to pressure readjustment (see below) even more calculation steps inside every time step, we chose to use a staggered grid instead of an grid where every value is being calculated at every point. This should save us a lot of calculation time. This makes sense because in the discretized equations we often need to access the neighbor points, with a staggered grid the step size can be cut in half. This way we might be able to avoid instabilities like oscillations of the solution. 
+		
+		During the evolution of this project we tried different grids, some where we calculated values in the center and some where we set the values in the center. % Was wurde am Schluss gebraucht? Bild davon einfügen.
+		
+		
+	\subsection{Discretization}
+		Next we need to discretize the Navier-Stokes equation in cylindrical coordinates (\ref{eq:NonDim NSG}), we use the finite difference method. The first derivative with respect to time is calculated with the backward finite difference
+		
+		\begin{equation}
+			\frac{\partial f(\vec{x}, t)}{\partial t} = \frac{f(\vec{x},t) - f(\vec{x}, t - \delta t)}{\delta t} .
+			\label{eq:BackDiv Time}
+		\end{equation}
+		
+		Away from the edge of the tank we use central difference for the calculation of the first and second spatial derivative % Was ist Ortsableitung ??
+		
+		\begin{eqnarray}
+			\frac{\partial f(x,t)}{\partial x} &=& \frac{f(x + \delta x,t) - f(x - \delta x,t,)}{2\delta x}
+			\label{eq:CentrDiv Space}
+			\\
+			\frac{\partial^2 f(x,t)}{\partial t^2} &=& \frac{f(x+\delta x,t) - 2f(x,t) + f(x - \delta x,y,z,t)}{\left(\delta x\right)^2} ,
+			\label{eq:2CentrDiv Space}
+		\end{eqnarray}
+		
+		at the edge of the tank we need to use backward differences and for the calculations in the center of the tank we need to use forward differences - these are the special cases in the code.
+		
+		Applying the differences above on the staggered grid and not calculating the boundary terms, the components of ou equation turn to the following:
+		
+		\begin{eqnarray}
+			\frac{\partial u}{\partial t} &=& \frac{1}{Re}\bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}
+			\nonumber \\
+			&& + \frac{1}{{r_u}^2}\frac{u[i,j+1,k]-2u[i,j,k]+u[i,j-1,k]}{(\delta \phi)^2}
+			\nonumber \\
+			&& + \frac{u[i,j,k+1] - 2u[i,j,k] +u[i,j,k-1]}{(\delta z)^2}
+			\nonumber \\
+			&& - \frac{2}{{r_u}^2}\frac{\frac{v[i+1,j,k]+v[i,j,k]}{2}-\frac{v[i+1,j-1,k]+v[i,j-1,k]}{2}}{\delta \phi}
+			- \frac{u[i,j,k]}{{r_u}^2}\bigg)
+			\nonumber \\
+			&& - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}
+			\nonumber \\
+			&& + \frac{1}{r_u}\Bigg(\left(\frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}\right)^2
+			\nonumber \\
+			&& - \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}
+			\nonumber \\
+			&&\cdot \frac{u[i,j+1,k]-u[i,j+1,k]}{2\delta \phi}\Bigg)
+			\nonumber \\
+			&& - \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}
+			\nonumber \\
+			&&\cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u
+			\nonumber \\
+			&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r}
+		\end{eqnarray}
+		
+	\subsection{Pressure readjustment}
+
+	\newpage
+\section{Numerical Simulation}
+	\subsection{Numercial Solution of the Navier-Stokes equation}
+		\subsubsection{The Concept}
+		
+		\subsubsection{Where it went wrong}
+	
+	\subsection{Simulation of Thermal Winds}
+		\subsubsection{The Concept}
+		\subsubsection{Results}
+
+	\newpage
+\section{Conclusion}
+
+	\newpage
+\section{Anhang / Code}
+\pagebreak
+\end{document}
