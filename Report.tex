@@ -7,7 +7,6 @@
 %\usepackage[T1]{fontenc}  %würde ä's über a's schiebeb
 %\usepackage[lmodern]
 
-\usepackage[english]{babel}
 \usepackage{amsmath}
 
 
@@ -21,7 +20,7 @@
 \usepackage{url}
 %\usepackage{here}
 \lstset{
-  language=C++,
+  language=Python,
   basicstyle=\footnotesize,
   %  numbers=left,                   % where to put the line-numbers
   stepnumber=1,                   % the step between two line-numbers.        
@@ -44,8 +43,9 @@
 
 \begin{document}
 
+\thispagestyle{empty}
 \begin{center}
-\Large{Philosophisch-Naturwissenschafftliche Fakultät}\\
+\Large{Philosophisch-Naturwissenschaftliche Fakultät}\\
 \Large{University of Bern}\\
 \end{center}
 
@@ -105,14 +105,16 @@ The goal of this thesis is to ...
 
 
 \section{Introduction}
-I have no idea what to write here...
+	I have no idea what to write here...
+	
+	\subsection{Goals}
+		
 
 \newpage
 
 \section{Physical background}
 
 	\subsection{Navier-Stokes and Continuity Equation}
-		
 		
 		The state of a fluid at any time is defined by six key variables:
 		The velocity of the fluid $\vec{u}=(u,v,w)$; pressure $p$; temperature $T$ and specific humidity in the atmosphere or salinity in the ocean. Since we are looking at fresh water in a tank, our fluid is defined by the velocity, pressure and temperature. The forces on an elementary parcel of such a fluid, following the parcel, are described by the equation of motion	or the Navier-Stokes equation
@@ -269,42 +271,151 @@ I have no idea what to write here...
 			\label{eq:2CentrDiv Space}
 		\end{eqnarray}
 		
-		at the edge of the tank we need to use backward differences and for the calculations in the center of the tank we need to use forward differences - these are the special cases in the code.
-		
-		Applying the differences above on the staggered grid and not calculating the boundary terms, the components of ou equation turn to the following:
+		The components of the Navier-Stokes equation (\ref{eq:NonDim NSG}) turn into three discrete equations:
 		
 		\begin{eqnarray}
-			\frac{\partial u}{\partial t} &=& \frac{1}{Re}\bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}
+			\frac{\partial u(r,\phi,z)}{\partial t} &=& \frac{u'(r,\phi,z)- u(r,\phi,z)}{\delta t}
 			\nonumber \\
-			&& + \frac{1}{{r_u}^2}\frac{u[i,j+1,k]-2u[i,j,k]+u[i,j-1,k]}{(\delta \phi)^2}
+			&=& \frac{1}{Re} \bigg( \frac{u(r+\delta r,\phi,z)-2u(r,\phi,z)+u(r-\delta r,\phi,z)}{(\delta r)^2}
 			\nonumber \\
-			&& + \frac{u[i,j,k+1] - 2u[i,j,k] +u[i,j,k-1]}{(\delta z)^2}
+							&&	+ \frac{1}{r}\frac{u(r+\delta r,\phi,z)-u(r-\delta r,\phi,z)}{2\delta r}
 			\nonumber \\
-			&& - \frac{2}{{r_u}^2}\frac{\frac{v[i+1,j,k]+v[i,j,k]}{2}-\frac{v[i+1,j-1,k]+v[i,j-1,k]}{2}}{\delta \phi}
-			- \frac{u[i,j,k]}{{r_u}^2}\bigg)
+							&&	+ \frac{1}{r^2}\frac{u(r,\phi+\delta\phi,z)-2u(r,\phi,z)+u(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
 			\nonumber \\
-			&& - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}
+							&&	+ \frac{u(r,\phi,z+\delta z)-2u(r,\phi,z)+u(r,\phi,z-\delta z)}{(\delta z)^2}
 			\nonumber \\
-			&& + \frac{1}{r_u}\Bigg(\left(\frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}\right)^2
+							&&	- \frac{u(r,\phi, z)}{r^2}
+								- \frac{2}{r^2}\frac{v(r,\phi+\delta\phi,z)-v(r,\phi-\delta\phi,z)}{2\delta\phi} \bigg)
 			\nonumber \\
-			&& - \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}
+			&&	+ \frac{v^2(r,\phi,z)}{r}
+				- u(r,\phi,z)\frac{u(r+\delta r,\phi,z)-u(r-\delta r,\phi,z)}{2\delta r}
 			\nonumber \\
-			&&\cdot \frac{u[i,j+1,k]-u[i,j+1,k]}{2\delta \phi}\Bigg)
+			&&	- \frac{v(r,\phi,z)}{r}\frac{u(r,\phi+\delta\phi,z)-u(r,\phi-\delta\phi,z)}{2\delta\phi}
 			\nonumber \\
-			&& - \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}
+			&&	- w(r,\phi,z)\frac{u(r,\phi,z+\delta z)-u(r,\phi,z-\delta z)}{2\delta z}
 			\nonumber \\
-			&&\cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u
-			\nonumber \\
-			&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r}
+			&&	- \frac{p(r+\delta r,\phi, z)-p(r-\delta r,\phi,z)}{2\delta r}
+				+ 2\Omega v(r,\phi,z)
+				+ \Omega^2 r
+			\label{eq:discrete u}
 		\end{eqnarray}
 		
+		\begin{eqnarray}
+			\frac{\partial v(r,\phi,z)}{\partial t} &=& \frac{v'(r,\phi,z)- v(r,\phi,z)}{\delta t}
+			\nonumber \\
+			&=& \frac{1}{Re} \bigg( \frac{v(r+\delta r,\phi,z)-2v(r,\phi,z)+v(r-\delta r,\phi,z)}{(\delta r)^2}
+			\nonumber \\
+							&&	+ \frac{1}{r}\frac{v(r+\delta r,\phi,z)-v(r-\delta r,\phi,z)}{2\delta r}
+			\nonumber \\
+							&&	+ \frac{1}{r^2}\frac{v(r,\phi+\delta\phi,z)-2v(r,\phi,z)+v(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
+			\nonumber \\
+							&&	+ \frac{v(r,\phi,z+\delta z)-2v(r,\phi,z)+v(r,\phi,z-\delta z)}{(\delta z)^2}
+			\nonumber \\
+							&&	- \frac{v(r,\phi, z)}{r^2}
+								- \frac{2}{r^2}\frac{u(r,\phi+\delta\phi,z)-u(r,\phi-\delta\phi,z)}{2\delta\phi} \bigg)
+			\nonumber \\
+			&&	+ \frac{u(r,\phi,z)\cdot v(r,\phi,z)}{r}
+				- u(r,\phi,z)\frac{v(r+\delta r,\phi,z)-v(r-\delta r,\phi,z)}{2\delta r}
+			\nonumber \\
+			&&	- \frac{v(r,\phi,z)}{r}\frac{v(r,\phi+\delta\phi,z)-v(r,\phi-\delta\phi,z)}{2\delta\phi}
+			\nonumber \\
+			&&	- w(r,\phi,z)\frac{v(r,\phi,z+\delta z)-v(r,\phi,z-\delta z)}{2\delta z}
+			\nonumber \\
+			&&	- \frac{1}{r}\frac{p(r,\phi+\delta\phi, z)-p(r,\phi-\delta\phi,z)}{2\delta \phi}
+				+ 2\Omega u(r,\phi,z)
+			\label{eq:discrete v}
+		\end{eqnarray}
+		
+		\begin{eqnarray}
+			\frac{\partial w(r,\phi,z)}{\partial t} &=& \frac{w'(r,\phi,z)- w(r,\phi,z)}{\delta t}
+			\nonumber \\
+			&=& \frac{1}{Re} \bigg( \frac{w(r+\delta r,\phi,z)-2w(r,\phi,z)+w(r-\delta r,\phi,z)}{(\delta r)^2}
+			\nonumber \\
+							&&	+ \frac{1}{r}\frac{w(r+\delta r,\phi,z)-w(r-\delta r,\phi,z)}{2\delta r}
+			\nonumber \\
+							&&	+ \frac{1}{r^2}\frac{w(r,\phi+\delta\phi,z)-2w(r,\phi,z)+w(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
+			\nonumber \\
+							&&	+ \frac{w(r,\phi,z+\delta z)-2w(r,\phi,z)+w(r,\phi,z-\delta z)}{(\delta z)^2} \bigg)
+			\nonumber \\
+			&&	- u(r,\phi,z)\frac{w(r+\delta r,\phi,z)-w(r-\delta r,\phi,z)}{2\delta r}
+			\nonumber \\
+			&&	- \frac{v(r,\phi,z)}{r}\frac{w(r,\phi+\delta\phi,z)-w(r,\phi-\delta\phi,z)}{2\delta\phi}
+			\nonumber \\
+			&&	- w(r,\phi,z)\frac{w(r,\phi,z+\delta z)-w(r,\phi,z-\delta z)}{2\delta z}
+			\nonumber \\
+			&&	- \frac{1}{r}\frac{p(r,\phi,z+\delta z)-p(r,\phi,z-\delta z)}{2\delta z}
+				- g
+			\label{eq:discrete w}
+		\end{eqnarray}
+		
+		Wherever we need to access the value of a component at a point where its grid has no value, the value of the component is approximated linearly. Solving these equations for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$ hands us expressions which only depend on the last time step and the pressure. Therefore we need to readjust the pressure after every time step.
+		
+		\subsubsection{CFL-Criterion}
+		
 	\subsection{Pressure readjustment}
-
+		In the discrete expressions of the Navier-Stokes equation we use the pressure of last time step to calculate the velocity $\vec{u}(\vec{r},t+\delta t)$. In general this velocity will not satisfy the continuity equation of a non-divergent flow, $\vec{\nabla} \vec{u} \neq 0$. Applying divergence to equation (\ref{eq: NSG}) yields a Poisson equation for the pressure
+		
+		\begin{equation}
+			\vec{\nabla} \cdot \vec{\nabla} p = \Delta p = f(\vec{u})
+			\label{eq:Poisson Pressure}
+		\end{equation}
+		
+		% Hier Referenz zum Fluiddynamik.pdf
+		A Poisson equation can be solved with a modified Richardson iteration. % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
+		
+		\begin{eqnarray}
+			p_{n+1} &=& p_n + \lambda \left(f(\vec{u}) - \Delta p_n\right)
+			\nonumber \\
+			&=& p_n + \lambda \frac{1}{\delta t} \vec{\nabla}\vec{u}
+			\label{eq:Drucknachregelung p}
+		\end{eqnarray}
+		
+		Inserting this solution in our expressions for the velocity yields
+		
+		\begin{eqnarray}
+			u_{n+1} &=& u_n - \lambda \partial_r (\vec{\nabla}\vec{u}) \\
+			v_{n+1} &=& v_n - \lambda \frac{1}{r} \partial_\phi (\vec{\nabla}\vec{u}) \\
+			w_{n+1} &=& w_n - \lambda \partial_z (\vec{\nabla}\vec{u})
+			\label{eq:Drucknachregelung uvw}
+		\end{eqnarray}
+		
+		This iteration can now be continued until the condition $\vec{\nabla}\vec{u}=0$ is satisfied sufficiently accurate. 
+		
 	\newpage
 \section{Numerical Simulation}
 	\subsection{Numercial Solution of the Navier-Stokes equation}
 		\subsubsection{The Concept}
-		
+			
+			Applying the differences above on the staggered grid and not calculating the boundary terms, the components of ou equation turn to the following:
+			%at the edge of the tank we need to use backward spatial differences and for the calculations in the center of the tank we need to use forward spatial differences - these are the special cases in the code.
+					
+			\begin{eqnarray}
+				u'[i,j,k] &=& u[i,j,k] + \delta t \Bigg( \frac{1}{Re}\Bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}
+				\nonumber \\
+				&& + \frac{1}{{r_u}^2}\frac{u[i,j+1,k]-2u[i,j,k]+u[i,j-1,k]}{(\delta \phi)^2}
+				\nonumber \\
+				&& + \frac{u[i,j,k+1] - 2u[i,j,k] +u[i,j,k-1]}{(\delta z)^2}
+				\nonumber \\
+				&& - \frac{2}{{r_u}^2}\frac{\frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right)-\frac{1}{2}\left(v[i+1,j-1,k]+v[i,j-1,k]\right)}{\delta \phi}
+				\nonumber \\
+				&&- \frac{u[i,j,k]}{{r_u}^2}\Bigg) - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}
+				\nonumber \\
+				&& + \frac{1}{r_u}\Bigg(\left(\frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}\right)^2
+				\nonumber \\
+				&& - \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}
+				\nonumber \\
+				&&\cdot \frac{u[i,j+1,k]-u[i,j+1,k]}{2\delta \phi}\Bigg)
+				\nonumber \\
+				&& - \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}
+				\nonumber \\
+				&&\cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u
+				\nonumber \\
+				&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r} \Bigg)
+			\end{eqnarray}
+			
+			Where $i$ is the radial index, $j$ the azimuthal and $k$ the vertical index. $r_u$ is the radius at the position $i$ on the $u$-grid, $r_p$ is the radius at the position $i$ on the $p$-, $v$- and $w$-grid.
+			Wherever we need to access the value of a component at a point where its grid has no value, the value of the component is approximated with a linear approximation
+			
 		\subsubsection{Where it went wrong}
 	
 	\subsection{Simulation of Thermal Winds}
@@ -316,5 +427,7 @@ I have no idea what to write here...
 
 	\newpage
 \section{Anhang / Code}
+	\subsection{Navier-Stokes equation}
+	\subsection{Thermal Wind}
 \pagebreak
 \end{document}
