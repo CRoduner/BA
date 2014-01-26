@@ -8,6 +8,7 @@
 %\usepackage[lmodern]
 
 \usepackage{amsmath}
+\usepackage[]{units}
 
 
 \usepackage{listings}
@@ -106,6 +107,8 @@ The goal of this thesis is to ...
 
 \section{Introduction}
 	I have no idea what to write here...
+	
+	Everything in the chapter physical background is based on the Plumb-Book!
 	
 	\subsection{Goals}
 		
@@ -238,13 +241,60 @@ The goal of this thesis is to ...
 		
 	\subsection{Geostrophic Balance}
 		%We assume that we already have a solid body rotation in ou system, which means that the velocity of our fluid in the rotating reference frame equals zero, $\vec{u} = 0$.
-		Geostrophic balance is the state that occurs, when the pressure gradient is balanced by the Coriolis term. It occurs in a stationary system ($\frac{D\vec{u}}{Dt}=0$) without friction and gravity.
+		If we look at a system, where friction and modified gravity (gravity and centrifugal forces) can be neglected, and which is stationary, i.e. a balance is set and $\frac{D\vec{u}}{Dt}=0$, the Navier-Stokes equation turns into
 		
-		-> read a lot more about it!!
-	
-		\subsubsection{Thermal Wind}
-			Weee, that's the thing I was able to do
-
+		\begin{equation}
+			2\vec{\Omega} \times \vec{u} + \vec{\nabla} p = 0 .
+			\label{eq:Geostrophic Balance}
+		\end{equation}
+		
+		This equation describes geostrophic balance, where the pressure gradient is balanced by the Coriolis term. This approximation holds if the Rossby number 
+		
+		\begin{equation}
+			R_0 = \frac{U}{f L}
+			\label{eq:Rossby Number}
+		\end{equation}
+		
+		is small enough. Here $f$ is the Coriolis term, which simplifies to $f=2\Omega$ in our case, $U$ is a typical magnitude for the velocity of the fluid, and $L$ is a characteristic length scale of the system. In our case, we expect the value of $\vec{u}$ to be smaller that the rotation speed, therefore $U \leq \Omega$ and $R_0 \leq \nicefrac[]{1}{2 L} \approx 1$.
+		
+%		Assuming that vertical velocities are much smaller than the horizontal ones, % from Plumb p. 102
+%		we neglect terms including the vertical velocity $w$
+		Neglecting vertical velocities, we get the geostrophic current, which is the velocity which exactly satisfies equation (\ref{eq:Geostrophic Balance})
+		
+		\begin{equation}
+			\vec{u}_g = \frac{1}{2\Omega \rho} \hat{\vec{z}} \times \vec{\nabla}p
+			\label{eq:Geostroph current}
+		\end{equation}
+		
+		\subsubsection{Thermal Wind equation}
+			So far we thought the density to be constant, but if temperature varies in our fluid, so does the density vary on pressure surfaces. We can write the density in the following form
+			
+			\begin{equation}
+				\rho = \rho_{ref} + \sigma ,
+				\label{eq:Density}
+			\end{equation} 
+		
+		where $\rho_{ref}$ is a constant reference density and $\sigma$ is the variation of the density about this reference. % eins zu eins aus plumb p. 119-120
+		
+		Now, taking the derivative with respect to $z$ of the geostrophic motion (\ref{eq:Geostroph current}), replacing $\rho$ with $\rho_{ref}$ and using the hydrostatic equation (\ref{eq:Hydrostat Balance}), gives us
+		
+		\begin{equation}
+			\frac{\partial \vec{u}_g}{\partial z} = - \frac{g}{2\Omega \rho_{ref}} \hat{\vec{z}} \times \vec{\nabla} \sigma
+		\end{equation}
+		
+		and using $\sigma \propto \alpha T$ from % PLumb Book eq. (4-4)
+		
+		\begin{equation}
+			\frac{\partial \vec{u}_g}{\partial z} = - \frac{\alpha g}{2\Omega \rho_{ref}} \hat{\vec{z}} \times \vec{\nabla} T
+		\end{equation}
+		
+		where $\alpha$ is the thermal expansion coefficient. This is the thermal wind relation connecting the vertical shear of the geostrophic motion to horizontal temperature gradients. In our case of the rotating water tank and the cylindrical coordinates this even simplifies more to an equation for only the azimuthal component of the velocity:
+		
+		\begin{equation}
+			\frac{\partial v}{\partial z} = \frac{\alpha g}{2\Omega} \frac{\partial T}{\partial r} .
+			\label{eq:Thermal Wind}
+		\end{equation}
+		
 	\newpage		
 \section{Numerical Theoretical Background}
 	\subsection{Staggered Grid}
