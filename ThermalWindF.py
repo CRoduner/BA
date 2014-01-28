@@ -11,11 +11,11 @@ r_i = 0.1               # in m (Innenrand)
 h_t = 0.3               # in m
 omega = 2*pi/6          # in 1/s
 T0 = 273                # in K
-TR = 350   
+TR = 300   
 
 ##  Number of grid points
-n_r = 20
-n_phi = 16
+n_r = 10
+n_phi = 8
 n_z = 10
 
 ##  Stepsizes           Dimensions:
@@ -23,7 +23,7 @@ dr = (r_t-r_i)/n_r            # 1/m
 dphi = 2*pi/n_phi       # 1/m
 dz = h_t/n_z            # 1/m
 
-dT = (TR-T0)/(n_r+1)    # K/m
+dT = (TR-T0)/(n_r)    # K/m
 
 dri = 1/dr
 dphii = 1/dphi
@@ -60,7 +60,6 @@ u_cart = np.zeros((n_r,n_phi,n_z))
 r = np.arange(r_i,r_t+dr/2, dr)
 
 v = np.zeros((n_r,n_phi,n_z))
-v_u = np.zeros((n_r,n_phi,n_z))      # need to get v on the u grid...
 v_cart = np.zeros((n_r,n_phi,n_z))
 
 w = np.zeros((n_r,n_phi,n_z))
@@ -76,11 +75,10 @@ z = np.zeros((n_r,n_phi,n_z))
 for i in range(n_r):
     for j in range(n_phi):
         for k in range(n_z-1):
-            T[i,j,k] = (i+1)*dT
-            T[n_r,j,k] = (n_r+1)*dT
-            print("v1:",i,j,k, v[i,j,k])
+            T[i,j,k] = T0 + (i)*dT
+            T[i+1,j,k] = T0 + (i+1)*dT              # Habe T(r) immer mit 1 verglichen
+                                                    # => radialer Unterschied in v
             v[i,j,k+1] = v[i,j,k] + dz*(0.5*a*g/om*dri*(T[i+1,j,k]-T[i,j,k]))
-            print("v2:",i,j,k+1, v[i,j,k+1])
 
             
 #print("u:", unew[4,4,:])
@@ -90,8 +88,8 @@ print("T(r):", T[:,1,1])
 for i in range(n_r):
     for j in range(n_phi):
         for k in range(n_z):
-            u_cart[i,j,k] = unew[i,j,k]*math.cos(phi(j)) - vnew[i,j,k]*math.sin(phi(j))
-            v_cart[i,j,k] = unew[i,j,k]*math.sin(phi(j)) + vnew[i,j,k]*math.cos(phi(j))
+            u_cart[i,j,k] = u[i,j,k]*math.cos(phi(j)) - v[i,j,k]*math.sin(phi(j))
+            v_cart[i,j,k] = u[i,j,k]*math.sin(phi(j)) + v[i,j,k]*math.cos(phi(j))
 
             x[i,j,k] = r[i]*math.cos(phi(j))
             y[i,j,k] = r[i]*math.sin(phi(j))
