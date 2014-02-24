@@ -11,7 +11,7 @@ r_i = 0.1               # in m (Innenrand)
 h_t = 0.3               # in m
 omega = 2*pi/6          # in 1/s
 T0 = 273                # in K
-TR = 300   
+TR = 300                # in K
 
 ##  Number of grid points
 n_r = 10
@@ -19,16 +19,16 @@ n_phi = 8
 n_z = 10
 
 ##  Stepsizes           Dimensions:
-dr = (r_t-r_i)/n_r            # 1/m
-dphi = 2*pi/n_phi       # 1/m
-dz = h_t/n_z            # 1/m
+dr = (r_t-r_i)/n_r      # m
+dphi = 2*pi/n_phi       # m
+dz = h_t/n_z            # m
 
-dT = (TR-T0)/(n_r)    # K/m
+dT = (TR-T0)/(n_r)      # K
 
 dri = 1/dr
 dphii = 1/dphi
 
-#   functions for j and phi, h
+#   Functions for j and phi, h
 def jp(j):
     if j==n_phi-1:
         return 0
@@ -46,7 +46,7 @@ L = dr                  # typical size coordinates in m
 
 a = 69*10**(-6)         # linear thermal expansion coefficient [a]=1/K
 
-gn = -9.81
+gn = -9.81              # gravitational constant [g]= m/s^2
 gdim = L/U**2
 g = gn/gdim             # undimensionalized version of gravity constant
 
@@ -88,8 +88,8 @@ print("T(r):", T[:,1,1])
 for i in range(n_r):
     for j in range(n_phi):
         for k in range(n_z):
-            u_cart[i,j,k] = u[i,j,k]*math.cos(phi(j)) - v[i,j,k]*math.sin(phi(j))
-            v_cart[i,j,k] = u[i,j,k]*math.sin(phi(j)) + v[i,j,k]*math.cos(phi(j))
+            u_cart[i,j,k] = u[i,j,k]*math.cos(phi(j)) - r[i]*v[i,j,k]*math.sin(phi(j))
+            v_cart[i,j,k] = u[i,j,k]*math.sin(phi(j)) + r[i]*v[i,j,k]*math.cos(phi(j))
 
             x[i,j,k] = r[i]*math.cos(phi(j))
             y[i,j,k] = r[i]*math.sin(phi(j))
