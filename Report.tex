@@ -9,9 +9,9 @@
 
 \usepackage{amsmath}
 \usepackage[]{units}
-%\usepackage[]{natbib}
-\usepackage[backend=bibtex, style=numeric-comp]{biblatex}
-\bibliography{BALib.bib}
+\usepackage[]{natbib}
+%\usepackage[backend=bibtex, style=numeric-comp]{biblatex}
+%\bibliography{BALib.bib}
 
 
 \usepackage{listings}
@@ -128,14 +128,14 @@ The goal of this thesis is to ...
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.4\textwidth]{Experiment.jpg}
-		\caption{A tank is set on a turntable, and can be viewed through a co-rotating overhead camera. The tank can be filled with water and an ice bucket in the center.}\todoRef{Referenz auf Labkurs}
+		\caption{A tank is set on a turntable, and can be viewed through a co-rotating overhead camera. The tank can be filled with water and an ice bucket in the center. Picture from \cite{Schneider}}
 		\label{fig:Experiment}
 	\end{figure}
 	\todoEnglish{this caption is bs}
 
 	The observable phenomena include Taylor columns, Ekman layers and spirals, western boundary currents and due to the temperature gradient that is induced by the ice bucket, thermal wind, Hadley circulation and baroclinic eddies.
 	
-	All of these phenomena can be explained with one equation, the Navier-Stokes equation, and certain idealizations and assumptions. The equation and the idealizations are explained in chapter 2, based on the book ``Atmosphere, ocean and climate dynamics: an introductory text" from John Marshall and Alan Plumb. \todoRef{Referenz aufs Buch} %\citet*{Marshall1965}
+	All of these phenomena can be explained with one equation, the Navier-Stokes equation, and certain idealizations and assumptions. The equation and the idealizations are explained in chapter 2, based on the book ``Atmosphere, ocean and climate dynamics: an introductory text" from John Marshall and Alan Plumb \cite{Marshall1965}.
 	
 	
 	\subsection{Goals}
@@ -358,7 +358,7 @@ The goal of this thesis is to ...
 		\begin{figure}[H]
 			\centering
 			\includegraphics[width=0.5\textwidth]{Grid2.JPG}
-			\caption{Staggered grid in cylindrical coordinates.} % [\cite{GridFigURL}]} % von http://geophysics.geoscienceworld.org/content/68/5/1731/F1.expansion.html
+			\caption{Staggered grid in cylindrical coordinates. [\cite{GridFigURL}]} % von http://geophysics.geoscienceworld.org/content/68/5/1731/F1.expansion.html
 			\label{fig:Grid}
 		\end{figure}
 		
@@ -467,7 +467,7 @@ The goal of this thesis is to ...
 		\end{equation}
 		
 		% Hier Referenz zum Fluiddynamik.pdf
-		A Poisson equation can be solved with a modified Richardson iteration. \todoRef{Fluiddynamik und Wiki}%\cite{WikiRichardson} % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
+		A Poisson equation can be solved with a modified Richardson iteration. \todoRef{Fluiddynamik und Wiki} \cite{WikiRichardson} % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
 		
 		\begin{eqnarray}
 			p_{n+1} &=& p_n - \lambda \left(f(\vec{u}) - \Delta p_n\right)
@@ -495,7 +495,7 @@ The goal of this thesis is to ...
 			\label{eq:CFL}
 		\end{equation}
 		 
-		which must be satisfied, in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow. \todoRef{Stocker} %\cite{Stocker2009}
+		which must be satisfied, in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow. \cite{Stocker2009}
 		We choose our time step $\delta t$ to be small enough for the given $U_i$ and $\delta x_i$.
 		
 		
@@ -548,7 +548,7 @@ The goal of this thesis is to ...
 			
 		\subsubsection{Outcome and Discussion}
 			Unfortunately we couldn't obtain any insights with the program because the calculated velocity was divergent. Even after only one time step, the initial balance of the solid body rotation was already lost. We thought that a regulation of the pressure  could fix this problem, but with pressure readjustment we still  didn't get a non-divergent velocity, although we tried different versions of pressure readjustment. 
-			For one, we tried the method presented in section 3.3, and we also tried the method presented in %\cite{Schmittfull2005}
+			For one, we tried the method presented in section 3.3, and we also tried the method presented in \cite{Schmittfull2005}
 			, which is slightly different. It uses $p_{n+1} = p_n - \lambda \vec{\nabla} \vec{u}_n$ and $u_{i_{n+1}} = u_{i_{n}} - \delta t \lambda \vec{\nabla}{\vec{u}_n}^T$. But none of these methods could fix the problem.\\
 			
 			Since the problem seemed to originate from the edges of the tank and the center of it, we tried different versions of the grid, where we would either calculate the values in the center from the equations or just set them to a reasonable value, or where we would even avoid having any rid points in the exact center. For the outer edge, we also tried different boundary conditions, like no-slip condition, where we would set the values at the edge to zero, since they must have the same velocity as the tank.
@@ -570,7 +570,7 @@ The goal of this thesis is to ...
 			
 			We could not find out whether the divergence of the velocity was connected to a mistake in the program or to a numerical mistake. Since it is a rather long program with long equations and many similar looking terms, it is highly probable that there are still many unseen mistakes or typing errors inside the program.
 			
-			We further suggest that the pressure adjustment method proposed by \todoRef{fluiddynamik.pdf} may not be suitable for the simulation of a three-dimensional water tank; although our adoption from two dimensions to three dimensions may also be flawed.
+			We further suggest that the pressure adjustment method proposed by \citet{Schmittfull2005} may not be suitable for the simulation of a three-dimensional water tank; although our adoption from two dimensions to three dimensions may also be flawed.
 			
 			If the attempt at simulating a cylindrical water tank is repeated, we recommend using the vorticity formulation of the Navier-Stokes equation, in which the pressure does not appear.
 			
@@ -584,7 +584,7 @@ The goal of this thesis is to ...
 		%\begin{center}
 			\centering
 			\includegraphics[width=0.8\textwidth]{ThermalWindExp.jpg}
-			\caption{Left side: Rotating cylindrical tank filled with water and a can in its center, which is filled with ice. Right side: The radial temperature gradient should cause a circulation in the tank.} %\cite{Marshall1965}}
+			\caption{Left side: Rotating cylindrical tank filled with water and a can in its center, which is filled with ice. Right side: The radial temperature gradient should cause a circulation in the tank. \cite{Marshall1965}}
 			\label{fig:TWExperiment}
 		%\end{center}
 		%\end{minipage}
@@ -644,7 +644,7 @@ The goal of this thesis is to ...
 			When we are only looking at the problem away from the tank edges, we can also set the velocity  at the bottom to a different value than zero. We then get the following results:
 			\todoFormat{anders schreiben}
 			
-			\begin{figure}[h]
+			\begin{figure}[ht]
 				\centering
 				\subfloat{
 					\includegraphics[width=0.5\textwidth]{InVSmallPosF.jpg}
@@ -656,9 +656,7 @@ The goal of this thesis is to ...
 				\caption{Visualization of the velocity with a small initial velocity $|\vec{u}|<<1$. Left: $|\vec{u}|>0$, right: $|\vec{u}|<0$.}
 			\end{figure}
 			
-			For small velocities in the lowest simulated layer the induced current is still clearly visible and is strong enough to turn the direction of the current, as we can see in figure \ref{fig:TW_small_neg}. If we set the initial velocity to high, the effects of the thermal wind shear become too small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
-			
-			\begin{figure}[h]
+			\begin{figure}[hb]
 				\centering
 				\subfloat{
 					\includegraphics[width=0.5\textwidth]{InVBigPosF.jpg}
@@ -670,8 +668,11 @@ The goal of this thesis is to ...
 				\caption{Visualization of the velocity with a big initial velocity $|\vec{u}| \approx 1$. Left: $|\vec{u}|>0$, right: $|\vec{u}|<0$}
 			\end{figure}
 			
-	
-	
+			For small velocities in the lowest simulated layer the induced current is still clearly visible and is strong enough to turn the direction of the current, as we can see in figure \ref{fig:TW_small_neg}. If we set the initial velocity to high, the effects of the thermal wind shear become too small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
+			
+
+			
+			All in all, the results of the simulation show the effects, that we expected. 
 	\newpage
 \section{Conclusion}
 	% weg über ROtation der GLeichung wäre besser gewesen
@@ -679,13 +680,21 @@ The goal of this thesis is to ...
 	to be done...
 	\todoWriteMore{la la la... you should finally do this!!}
 	
+	Although the main part of this thesis did not work as planned, I was still able to learn a lot from working on the program, trying to find the errors and editing it. With the necessary simplifications, we were able to visualize the effects of a purely radial temperature gradient on the motion of the water in the rotating tank. This is still quite a nice result. 
+	
+	- Gained a lot understanding of how numerical solutions are done.
+	
+	- Better understanding of ocean and atmosphere dynamics and where certain winds or circulations come from.
+	
+	
+	
 	\newpage
 	
-	%\bibliographystyle{plainnat.bst}
-	\printbibliography
-	%\nocite{*}
-	% What the hell? It doesn't make the bibliography... :(
-	\todoFormat{there needs to be a bibliography...}
+	
+	\bibliographystyle{plain} % alternativ: plainnat
+	\bibliography{BALib}
+	%\printbibliography
+	\nocite{*}
 
 	\newpage
 \section{Appendix / Code}
