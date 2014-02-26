@@ -11,7 +11,7 @@
 \usepackage[]{units}
 %\usepackage[]{natbib}
 \usepackage[backend=bibtex, style=numeric-comp]{biblatex}
-\bibliography{BachelorLib.bib}
+\bibliography{BALib.bib}
 
 
 \usepackage{listings}
@@ -119,6 +119,8 @@ The goal of this thesis is to ...
 
 \section{Introduction}
 	\todoWriteMore{This needs more explanation...}
+	\todoFormat{Change size of captions}
+	\todo{Einheitliche Schreibweise der NSG (mit/ohne Bindestrich, usw).}
 
 	The dynamics of the ocean and the atmosphere have a major impact on the climate. Therefore, understanding these dynamics is an important subject for environmental studies. \\
 	In the Lab Course, physics students of the University of Berne get a chance to investigate the properties of some principal large scale atmospheric and oceanic circulations in a water tank. In the experiment a relatively simple isolated system is observed. A water-filled plexiglass tank is placed on a turntable and rotated at a constant speed. By placing an obstacle on the ground of the tank, applying speed change, or installing an ice-filled vessel in the center of the tank, basic circulation phenomena can be observed. The experimental set up is shown in figure \ref{fig:Experiment}.\linebreak
@@ -133,16 +135,22 @@ The goal of this thesis is to ...
 
 	The observable phenomena include Taylor columns, Ekman layers and spirals, western boundary currents and due to the temperature gradient that is induced by the ice bucket, thermal wind, Hadley circulation and baroclinic eddies.
 	
-	All of these phenomena can be explained with one equation, the Navier Stokes equation, and certain idealizations and assumptions. The equation and the idealizations are explained in chapter 2, based on the book ``Atmosphere, ocean and climate dynamics: an introductory text" from John Marshall and Alan Plumb. \todoRef{Referenz aufs Buch} %\citet*{Marshall1965}
+	All of these phenomena can be explained with one equation, the Navier-Stokes equation, and certain idealizations and assumptions. The equation and the idealizations are explained in chapter 2, based on the book ``Atmosphere, ocean and climate dynamics: an introductory text" from John Marshall and Alan Plumb. \todoRef{Referenz aufs Buch} %\citet*{Marshall1965}
+	
 	
 	\subsection{Goals}
 	\todoWriteMore{what is the goal of this thesis: \\ numerical solution of nsg and visualization of the solution to compare it with the experiment.}
 	
-	The main goal is to numerically solve the Navier Stokes equation for a rotating cylindrical tank and visualize the results in a vector plot. 
+	The main goal of this thesis is to simulate the experiment on the computer and compare the results with the expectations from the theory and the experiment. The simulation is done by numerically solving the Navier-Stokes equation for a rotating cylindrical tank using the Finite Difference Methon in Python. \todoWriteMore{Besser ausführen, mehr Text}
+	Furthermore, the thesis should give a first insight into climate modeling and numerical simulation. 
 	
-	- Simulation of the experiment that is done in the lab course
+	Handling the programming language Python should be learned from scratch. \todoEnglish{besser formulieren}
 	
-	- Comparison of the theoretical results with the results of the experiment
+%	The main goal is to numerically solve the Navier-Stokes equation for a rotating cylindrical tank and visualize the results in a vector plot. 
+%	
+%	- Simulation of the experiment that is done in the lab course
+%	
+%	- Comparison of the theoretical results with the results of the experiment
 
 \newpage
 
@@ -190,7 +198,7 @@ The goal of this thesis is to ...
 		% Dieser Abschnitt ist vollständig aus Plumb-Buch (S.84ff)
 		
 		\subsubsection{Equation of motion in a rotating frame}		% Maybe as sub- instead of subsubsection
-			To be used in our set up Equation (\ref{eq:Simple NSG}) needs to be transformed in to a rotating reference frame. We start by the relation of the velocity in the inertial frame $\vec{u}_{in}$ and the velocity in the rotating frame $\vec{u}_{rot}$
+			To be used in our set up, equation (\ref{eq:Simple NSG}) needs to be transformed in to a rotating reference frame. We start by the relation of the velocity in the inertial frame $\vec{u}_{in}$ and the velocity in the rotating frame $\vec{u}_{rot}$
 			\begin{equation}
 				\vec{u}_{in} = \vec{u}_{rot} + \vec{\Omega}\times\vec{r}
 				\label{eq:Velocity Frames}
@@ -256,9 +264,15 @@ The goal of this thesis is to ...
 		
 		\subsubsection{Equations in component form in cylindrical coordinates}
 		\todoEnglish{find better title}
-		\todoWriteMore{write down equations in cylindrical coordinates in component form and some text with it}
 		
-	\subsection{Hydrostatic Balance} % evtl. mehr Text dazu?
+		Converting the equation from Cartesian coordinates to cylindrical coordinates was quite time consuming due to \\
+		\colorbox{red}{problems with the gradient and the nabla operator \\ in cylindrical coordinates}.
+		
+		In component form the Navier-Stokes equation in cylindrical coordinates is:
+		\todoWriteMore{write down equations in cylindrical coordinates in component form and some text with it (more explanation why it was time consuming)}
+		
+		
+	\subsection{Hydrostatic Balance}
 		If we take a look at the vertical component of the equation of motion in a non-rotating frame (\ref{eq:Simple NSG}):
 		
 		\begin{eqnarray}
@@ -341,19 +355,15 @@ The goal of this thesis is to ...
 		
 		On the staggered grid, the velocity components and the pressure are calculated at different points. Figure \ref{fig:Grid} shows a section of the grid that was used.
 		
-		\begin{figure}[h]
-		\begin{minipage}{\textwidth}
-		\begin{center}
+		\begin{figure}[H]
 			\centering
 			\includegraphics[width=0.5\textwidth]{Grid2.JPG}
 			\caption{Staggered grid in cylindrical coordinates.} % [\cite{GridFigURL}]} % von http://geophysics.geoscienceworld.org/content/68/5/1731/F1.expansion.html
 			\label{fig:Grid}
-		\end{center}
-		\end{minipage}
 		\end{figure}
 		
-		During the evolution of this project we tried different grids, some where we calculated values in the center and some where we set the values in the center. \todoWriteMore{eventuell punkt im zentrum noch thematisieren. grid wurde sonst nicht gross verändert.} % Was wurde am Schluss gebraucht? Bild davon einfügen.
-		
+		One problem that occurred during the evolution of this project was the treatment of the point in the center of the tank. Maintaining the grid up to the center yields $n_\phi$ grid points which all describe the same location and should therefore have the same value. We could also use just one point in the center, and all surrounding points of the grid would then access this point. We also tried either calculating or setting the value(s) of the point(s) in the center.
+		\todoEnglish{this doesn't sound good yet.}
 		
 	\subsection{Discretization} % Mehr einleitender Text vor Unterkapitel
 		Next we need to discretize the equation of motion in cylindrical coordinates (\ref{eq:NonDim NSG}) and (\ref{eq:Thermal Wind}). Therefore, we need to change all derivatives to finite differences. 
@@ -362,129 +372,82 @@ The goal of this thesis is to ...
 			The first derivative with respect to time is calculated with the forward finite difference
 			
 			\begin{equation}
-				\frac{\partial f(\vec{x}, t)}{\partial t} = \frac{f(\vec{x},t+\delta t) - f(\vec{x}, t)}{\delta t} .
-				\label{eq:BackDiv Time}
+				\frac{\partial f(\vec{x}, t)}{\partial t} = \frac{f(\vec{x},t+\delta t) - f(\vec{x}, t)}{\delta t} = \frac{f'(\vec{x},t) - f(\vec{x}, t)}{\delta t} .
+				\label{eq:ForwDiv Time}
 			\end{equation}
 			
 			Away from the edge of the tank we use central difference for the calculation of the first and second spatial derivative % Was ist Ortsableitung ??
-			\todoFormat{Gleichungen mit i,j,k aufschreiben, u' vor den gleichungen erklären}
 			
 			\begin{eqnarray}
 				\frac{\partial f(x,t)}{\partial x} &=& \frac{f(x + \delta x,t) - f(x - \delta x,t,)}{2\delta x}
 				\label{eq:CentrDiv Space}
 				\\
-				\frac{\partial^2 f(x,t)}{\partial t^2} &=& \frac{f(x+\delta x,t) - 2f(x,t) + f(x - \delta x,y,z,t)}{\left(\delta x\right)^2} ,
+				\frac{\partial^2 f(x,t)}{\partial x^2} &=& \frac{f(x+\delta x,t) - 2f(x,t) + f(x - \delta x,t)}{\left(\delta x\right)^2} ,
 				\label{eq:2CentrDiv Space}
 			\end{eqnarray}
 			
-			The components of the Navier-Stokes equation (\ref{eq:NonDim NSG}) turn into three discrete equations:
+			Applying the forward finite difference on the left-hand side of equation \todoRef{Ref auf Komponentenform der NSG} and solving for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$, hands us the following discrete equations:
+			\todoFormat{u\_p durch u ersetzen?}
 			
-			Wherever we need to access the value of a component at a point where its grid has no value, the value of the component is interpolated linearly. Solving these equations for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$ hands us expressions which only depend on the last time step and the pressure. Therefore we need to readjust the pressure after every time step.
-			
+			{\allowdisplaybreaks
 			\begin{eqnarray}
-			 % v_p[i,j,k] = \frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right)
-			 v_u[i,j,k] = \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4} \\
-			 w_u[i,j,k] = \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}			 
-			\end{eqnarray}
-			
-			
-			\begin{eqnarray}
-				u'[i,j,k] &=& u[i,j,k]
-				\nonumber \\
-				&& +\delta t \Bigg[\frac{1}{Re}\bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}
-				\nonumber \\
-				&& + \frac{1}{{r_u}^2}\frac{u[i,j+1,k]-2u[i,j,k]+u[i,j-1,k]}{(\delta \phi)^2}
-				\nonumber \\
-				&& + \frac{u[i,j,k+1] - 2u[i,j,k] +u[i,j,k-1]}{(\delta z)^2}
-				\nonumber \\
-				&& - \frac{2}{{r_u}^2}\frac{\frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right)-\frac{1}{2}\left(v[i+1,j-1,k]+v[i,j-1,k]\right)}{\delta \phi}
-				\nonumber \\
-				&& - \frac{u[i,j,k]}{{r_u}^2}\bigg) - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}
-				\nonumber \\
-				&& + \frac{1}{r_u}\bigg(\left(v_u[i,j,k]\right)^2 - v_u[i,j,k] \cdot \frac{u[i,j+1,k]-u[i,j-1,k]}{2\delta \phi}\bigg)
-				\nonumber \\
-				&& - w_u[i,j,k] \cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u
-				\nonumber \\
+				u'[i,j,k] &=& u[i,j,k]	\nonumber \\
+				&& +\delta t \Bigg[\frac{1}{Re}\bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}	\nonumber \\
+				&& + \frac{1}{{r_u}^2}\frac{u[i,j+1,k]-2u[i,j,k]+u[i,j-1,k]}{(\delta \phi)^2}	\nonumber \\
+				&& + \frac{u[i,j,k+1] - 2u[i,j,k] +u[i,j,k-1]}{(\delta z)^2}	\nonumber \\
+				&& - \frac{2}{{r_u}^2}\frac{\frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right)-\frac{1}{2}\left(v[i+1,j-1,k]+v[i,j-1,k]\right)}{\delta \phi}	\nonumber \\
+				&& - \frac{u[i,j,k]}{{r_u}^2}\bigg) - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}	\nonumber \\
+				&& + \frac{1}{r_u}\bigg(\left(v_u[i,j,k]\right)^2 - v_u[i,j,k] \cdot \frac{u[i,j+1,k]-u[i,j-1,k]}{2\delta \phi}\bigg)	\nonumber \\
+				&& - w_u[i,j,k] \cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u	\nonumber \\
 				&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r} \Bigg]
+				\label{eq:Discrete u}
 			\end{eqnarray}
-
 			
-%			\begin{eqnarray}
-%				\frac{\partial u(r,\phi,z)}{\partial t} &=& \frac{u'(r,\phi,z)- u(r,\phi,z)}{\delta t}
-%				\nonumber \\
-%				&=& \frac{1}{Re} \bigg( \frac{u(r+\delta r,\phi,z)-2u(r,\phi,z)+u(r-\delta r,\phi,z)}{(\delta r)^2}
-%				\nonumber \\
-%								&&	+ \frac{1}{r}\frac{u(r+\delta r,\phi,z)-u(r-\delta r,\phi,z)}{2\delta r}
-%				\nonumber \\
-%								&&	+ \frac{1}{r^2}\frac{u(r,\phi+\delta\phi,z)-2u(r,\phi,z)+u(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
-%				\nonumber \\
-%								&&	+ \frac{u(r,\phi,z+\delta z)-2u(r,\phi,z)+u(r,\phi,z-\delta z)}{(\delta z)^2}
-%				\nonumber \\
-%								&&	- \frac{u(r,\phi, z)}{r^2}
-%									- \frac{2}{r^2}\frac{v(r,\phi+\delta\phi,z)-v(r,\phi-\delta\phi,z)}{2\delta\phi} \bigg)
-%				\nonumber \\
-%				&&	+ \frac{v^2(r,\phi,z)}{r}
-%					- u(r,\phi,z)\frac{u(r+\delta r,\phi,z)-u(r-\delta r,\phi,z)}{2\delta r}
-%				\nonumber \\
-%				&&	- \frac{v(r,\phi,z)}{r}\frac{u(r,\phi+\delta\phi,z)-u(r,\phi-\delta\phi,z)}{2\delta\phi}
-%				\nonumber \\
-%				&&	- w(r,\phi,z)\frac{u(r,\phi,z+\delta z)-u(r,\phi,z-\delta z)}{2\delta z}
-%				\nonumber \\
-%				&&	- \frac{p(r+\delta r,\phi, z)-p(r-\delta r,\phi,z)}{2\delta r}
-%					+ 2\Omega v(r,\phi,z)
-%					+ \Omega^2 r
-%				\label{eq:Discrete u}
-%			\end{eqnarray}
-%			
-%			\begin{eqnarray}
-%				\frac{\partial v(r,\phi,z)}{\partial t} &=& \frac{v'(r,\phi,z)- v(r,\phi,z)}{\delta t}
-%				\nonumber \\
-%				&=& \frac{1}{Re} \bigg( \frac{v(r+\delta r,\phi,z)-2v(r,\phi,z)+v(r-\delta r,\phi,z)}{(\delta r)^2}
-%				\nonumber \\
-%								&&	+ \frac{1}{r}\frac{v(r+\delta r,\phi,z)-v(r-\delta r,\phi,z)}{2\delta r}
-%				\nonumber \\
-%								&&	+ \frac{1}{r^2}\frac{v(r,\phi+\delta\phi,z)-2v(r,\phi,z)+v(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
-%				\nonumber \\
-%								&&	+ \frac{v(r,\phi,z+\delta z)-2v(r,\phi,z)+v(r,\phi,z-\delta z)}{(\delta z)^2}
-%				\nonumber \\
-%								&&	- \frac{v(r,\phi, z)}{r^2}
-%									- \frac{2}{r^2}\frac{u(r,\phi+\delta\phi,z)-u(r,\phi-\delta\phi,z)}{2\delta\phi} \bigg)
-%				\nonumber \\
-%				&&	+ \frac{u(r,\phi,z)\cdot v(r,\phi,z)}{r}
-%					- u(r,\phi,z)\frac{v(r+\delta r,\phi,z)-v(r-\delta r,\phi,z)}{2\delta r}
-%				\nonumber \\
-%				&&	- \frac{v(r,\phi,z)}{r}\frac{v(r,\phi+\delta\phi,z)-v(r,\phi-\delta\phi,z)}{2\delta\phi}
-%				\nonumber \\
-%				&&	- w(r,\phi,z)\frac{v(r,\phi,z+\delta z)-v(r,\phi,z-\delta z)}{2\delta z}
-%				\nonumber \\
-%				&&	- \frac{1}{r}\frac{p(r,\phi+\delta\phi, z)-p(r,\phi-\delta\phi,z)}{2\delta \phi}
-%					+ 2\Omega u(r,\phi,z)
-%				\label{eq:Discrete v}
-%			\end{eqnarray}
-%			
-%			\begin{eqnarray}
-%				\frac{\partial w(r,\phi,z)}{\partial t} &=& \frac{w'(r,\phi,z)- w(r,\phi,z)}{\delta t}
-%				\nonumber \\
-%				&=& \frac{1}{Re} \bigg( \frac{w(r+\delta r,\phi,z)-2w(r,\phi,z)+w(r-\delta r,\phi,z)}{(\delta r)^2}
-%				\nonumber \\
-%								&&	+ \frac{1}{r}\frac{w(r+\delta r,\phi,z)-w(r-\delta r,\phi,z)}{2\delta r}
-%				\nonumber \\
-%								&&	+ \frac{1}{r^2}\frac{w(r,\phi+\delta\phi,z)-2w(r,\phi,z)+w(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
-%				\nonumber \\
-%								&&	+ \frac{w(r,\phi,z+\delta z)-2w(r,\phi,z)+w(r,\phi,z-\delta z)}{(\delta z)^2} \bigg)
-%				\nonumber \\
-%				&&	- u(r,\phi,z)\frac{w(r+\delta r,\phi,z)-w(r-\delta r,\phi,z)}{2\delta r}
-%				\nonumber \\
-%				&&	- \frac{v(r,\phi,z)}{r}\frac{w(r,\phi+\delta\phi,z)-w(r,\phi-\delta\phi,z)}{2\delta\phi}
-%				\nonumber \\
-%				&&	- w(r,\phi,z)\frac{w(r,\phi,z+\delta z)-w(r,\phi,z-\delta z)}{2\delta z}
-%				\nonumber \\
-%				&&	- \frac{1}{r}\frac{p(r,\phi,z+\delta z)-p(r,\phi,z-\delta z)}{2\delta z}
-%					- g
-%				\label{eq:Discrete w}
-%			\end{eqnarray}
+			\begin{eqnarray}
+				v'[i,j,k] &=& v[i,j,k]	\nonumber \\
+				&& + \delta t \Bigg[ \frac{1}{Re} \bigg( \frac{v[i+1,j,k]-2 v[i,j,k]+v[i-1,j,k]}{(\delta r)^2}	\nonumber \\
+				&& + \frac{1}{{r_p}^2} \frac{v[i,j+1,k]-2v[i,j,k]+v[i,j-1,k]}{(\delta \phi)^2}	\nonumber \\
+				&& + \frac{v[i,j,k+1]-2v[i,j,k]+v[i,j,k-1]}{(\delta z)^2}	\nonumber \\
+				&& + \frac{2}{{r_p}^2} \frac{u_p[i,j,k]-u_p[i,j+1,k]}{\delta\phi} - \frac{v[i,j,k]}{{r_p}^2} \bigg) \nonumber \\
+				&& + \bigg( \frac{1}{Re\cdot r_p} - u_v[i,j,k] \bigg) \cdot \frac{v[i+1,j,k]-v[i-1,j,k]}{2\delta r} \nonumber \\
+				&& - \frac{v[i,j,k] \cdot u_v[i,j,k]}{r_p} \nonumber \\
+				&& - \frac{v[i,j,k]}{r_p}\cdot \frac{v[i,j+1,k]-v[i,j-1,k]}{2\delta \phi} \nonumber \\
+				&& - w_v[i,j,k] \cdot \frac{v[i,j,k+1]-v[i,j,k-1]}{2\delta z} \nonumber \\
+				&& - 2\Omega\cdot u_v[i,j,k] - \frac{1}{r_p} \frac{p[i,j+1,k]-p[i,j,k]}{\delta \phi}
+				\Bigg]
+				\label{eq:Discrete v}
+			\end{eqnarray}
+						
+			\begin{eqnarray}
+				w'[i,j,k] &=& w[i,j,k]	\nonumber \\
+				&& + \delta t \Bigg[ \frac{1}{Re} \bigg( \frac{w[i+1,j,k]-2w[i,j,k]+w[i-1,j,k]}{(\delta r)^2} \nonumber \\
+				&& + \frac{1}{{r_p}^2} \frac{w[i,j+1,k]-2w[i,j,k]+w[i,j-1.k]}{(\delta\phi)^2} \nonumber \\
+				&& + \frac{w[i,j,k+1]-2w[i,j,k]+w[i,j,k-1]}{(\delta z)^2} \bigg) \nonumber \\
+				&& - \bigg(\frac{1}{Re\cdot r_p} - u_w \bigg) \cdot \frac{w[i+1,j,k]-w[i-1,j,k]}{2 \delta r} \nonumber \\
+				&& - \frac{v_w[i,j,k]}{r_p} \frac{w[i,j+1,k]-w[i,j-1,k]}{2\delta \phi} \nonumber \\
+				&& - w[i,j,k] \frac{w[i,j,k+1]-w[i,j,k-1]}{2\delta z} \nonumber \\
+				&& - \frac{p[i,j,k+1]-p[i,j,k]}{\delta z} -g
+				\Bigg]
+				\label{eq:Discrete w}
+			\end{eqnarray}
+			}
 			
-			Wherever we need to access the value of a component at a point where its grid has no value, the value of the component is interpolated linearly. Solving these equations for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$ hands us expressions which only depend on the last time step and the pressure. Therefore we need to readjust the pressure after every time step.
+			Where $i$ is the radial index, $j$ the azimuthal and $k$ the vertical index. $r_u$ is the radius at the position $i$ on the $u$-grid, and $r_p$ is the radius at the position $i$ on the $p$-, $v$-, or $w$-grid.
+			
+			Wherever we need to access the value of a component at a point where its grid has no value, the value of the component is interpolated linearly. These interpolations are then shortened to $u_v$ for the value of $u$ on the grid of $v$ and so on.
+			
+			\begin{eqnarray}
+				% v_p[i,j,k] = \frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right) %-> kann man verwenden, macht aber nicht so sinn
+				v_u[i,j,k] &=& \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4} \nonumber \\
+				w_u[i,j,k] &=& \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}	\nonumber \\
+				u_p[i,j,k] &=& \frac{u[i,j,k]+u[i-1,j,k]}{2} \nonumber \\ % aus konsistenzgründen lieber darauf verzichten?
+				u_v[i,j,k] &=& \frac{u[i,j,k]+u[i-1,j,k]+u[i,j+1,k]+u[i-1,j+1,k]}{4} \nonumber \\
+				w_v[i,j,k] &=& \frac{w[i,j,k]+w[i,j+1,k]+w[i,j,k-1]+w[i,j+1,k-1]}{4} \nonumber \\
+				u_w[i,j,k] &=& \frac{u[i,j,k]+u[i-1,j,k]+u[i,j,k+1]+u[i-1,j,k+1]}{4} \nonumber \\
+				v_w[i,j,k] &=& \frac{v[i,j,k]+v[i,j-1,k]+v[i,j,k+1]+v[i,j-1,k+1]}{4} \nonumber
+			\end{eqnarray}
+			
+			We now have three expressions which only depend on the previous time step and the pressure. Therefore we need to readjust the pressure after every time step, which is done in section 3.3 .
 			
 		\subsubsection{Thermal wind equation}
 			To discretize the thermal wind equation (\ref{eq:Thermal Wind}), we use a forward difference for the first derivative of the azimuthal velocity with respect to $z$ and a centred difference for the first derivative of $T$. Solving these equation for $v(r,\phi, z+1)$ yields
@@ -504,7 +467,7 @@ The goal of this thesis is to ...
 		\end{equation}
 		
 		% Hier Referenz zum Fluiddynamik.pdf
-		A Poisson equation can be solved with a modified Richardson iteration. %\cite{WikiRichardson} % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
+		A Poisson equation can be solved with a modified Richardson iteration. \todoRef{Fluiddynamik und Wiki}%\cite{WikiRichardson} % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
 		
 		\begin{eqnarray}
 			p_{n+1} &=& p_n - \lambda \left(f(\vec{u}) - \Delta p_n\right)
@@ -532,7 +495,7 @@ The goal of this thesis is to ...
 			\label{eq:CFL}
 		\end{equation}
 		 
-		which must be satisfied, in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow. %\cite{Stocker2009}
+		which must be satisfied, in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow. \todoRef{Stocker} %\cite{Stocker2009}
 		We choose our time step $\delta t$ to be small enough for the given $U_i$ and $\delta x_i$.
 		
 		
@@ -606,6 +569,11 @@ The goal of this thesis is to ...
 			First, we only calculated the vertical velocity in the center this way, but after this didn't work either, we calculated the vertical velocity on every point from this condition. But even applying the continuity equation on $w$ wouldn't give us a non-divergent flow.
 			
 			We could not find out whether the divergence of the velocity was connected to a mistake in the program or to a numerical mistake. Since it is a rather long program with long equations and many similar looking terms, it is highly probable that there are still many unseen mistakes or typing errors inside the program.
+			
+			We further suggest that the pressure adjustment method proposed by \todoRef{fluiddynamik.pdf} may not be suitable for the simulation of a three-dimensional water tank; although our adoption from two dimensions to three dimensions may also be flawed.
+			
+			If the attempt at simulating a cylindrical water tank is repeated, we recommend using the vorticity formulation of the Navier-Stokes equation, in which the pressure does not appear.
+			
 			\newpage
 			
 	\subsection{Simulation of Thermal Winds}
@@ -622,15 +590,41 @@ The goal of this thesis is to ...
 		%\end{minipage}
 		\end{figure}
 		
-		We place a cylindrical tank with a can in its center on a turntable. The tank is filled with water to a depth of $\unit[20]{cm}$ or so, and the turntable is rotated slowly (about $\unit[1]{rpm}$). After solid body rotation is achieved, the can is filled with ice, which induces a radial temperature gradient. A thermal wind shear develops in balance with it.
-		% Vielleicht noch Bild, wie das ganze im Eperiment aussieht. 
+		We place a cylindrical tank with a can in its center on a turntable. The tank is filled with water to a depth of $\unit[20]{cm}$ or so, and the turntable is rotated slowly ($\Omega < \unit[1]{rpm}$). After solid body rotation is achieved, the can is filled with ice, which induces a radial temperature gradient. A thermal wind shear develops in balance with it, as sketched in figure \ref{fig:TWExperiment} on the right.
+		\newline
+		In the lab this can be seen by adding some dye in the water. The dye streaks are tilted over into a corkscrew pattern by an azimuthal current and form a spiral around the ice-filled can in the center. Pictures of it can be seen in figure \ref{fig:TWExp1} and \ref{fig:TWExp2}.
 		
-				
+		% Foto aus dem Buch, etwas schönes als eigene Fotos, aber halt aus dem Buch...
+%		\begin{figure}
+%		%	\begin{minipage}{0.8\textwidth}
+%				\centering
+%				\includegraphics[width=0.8\textwidth]{TWExpRes.jpg}
+%				\caption{Photograph of the experiment from \todoRef{Plumb Book}. The green dye streaks show the thermal wind, that is induced by the radial temperature gradient.}
+%				\label{fig:TWExpBook}
+%		%	\end{minipage}
+%		\end{figure}
+		
+		\begin{figure}
+		%	\begin{minipage}{0.8\textwidth}
+				\centering
+				\subfloat{
+				\includegraphics[width=0.4\textwidth]{k1.jpg}
+				\label{fig:TWExp1}}
+		%	\end{minipage}
+		%	\begin{minipage}{0.8\textwidth}
+				\subfloat{
+				\includegraphics[width=0.4\textwidth]{k3b.jpg}
+				\label{fig:TWExp2}}
+		%	\end{minipage}
+			\caption{Photographs of the experiment in the Lab Course. The blue dye shows the corkscrew pattern that is formed by the thermal wind.}
+		\end{figure}
+		
+		
 		\subsubsection{The Concept}  % Wohl noch etwa ausbauen!
 			For the calculation of the velocity, we need to iterate equation (\ref{eq:Discrete Thermal v}) over all grid points. Because we only need the neighboring temperature points to calculate the velocity at a certain point, we chose to use a staggered grid again. This time we have a grid for the values of the azimuthal velocity and a radially offset grid for the temperature. After the iteration we need to convert the velocity to Cartesian coordinates in order to plot the result.
 			
 		\subsubsection{Results and Discussion}
-			With initial values of the velocity set to zero in the rotating frame - which makes sense, since we presumed a solid body rotation, i. e. balance, for the calculations - we get the following results.
+			With bottom boundary values of the velocity set to zero in the rotating frame, i. e. no-slip boundary conditions - which makes sense, since we presumed a solid body rotation, i. e. balance, for the calculations - we get the following results.
 			
 			% Bilder mit minipage machen!
 			\begin{figure}[h]
@@ -645,9 +639,10 @@ The goal of this thesis is to ...
 				\caption{Visualization of the velocity with initial condition $\vec{u}=0$. Vectors show the direction and value of the velocity at each point of the grid.}
 			\end{figure}
 			
-			Which looks just the way we expected it. The radial temperature gradient induced a thermal wind shear and therefore a circulation of the water. The geostrophic flow varies with height, the currents increase with height.
+			Which looks just the way we have expected it. The radial temperature gradient induced a thermal wind shear and therefore a circulation of the water. The geostrophic flow varies with height, the currents increase with height.
 			
-			Since we ae only looking at the problem away from the tank edges, we can also set the initial velocity to a different value than zero. We then get the following results: 
+			When we are only looking at the problem away from the tank edges, we can also set the velocity  at the bottom to a different value than zero. We then get the following results:
+			\todoFormat{anders schreiben}
 			
 			\begin{figure}[h]
 				\centering
@@ -661,7 +656,7 @@ The goal of this thesis is to ...
 				\caption{Visualization of the velocity with a small initial velocity $|\vec{u}|<<1$. Left: $|\vec{u}|>0$, right: $|\vec{u}|<0$.}
 			\end{figure}
 			
-			For small intial velocities the induced current is still clearly visible and is strong enough to turn the direction of the initial current, as we can see in figure \ref{fig:TW_small_neg}. If we set the initial velocity to high, the effects of the thermal wind shear become to small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
+			For small velocities in the lowest simulated layer the induced current is still clearly visible and is strong enough to turn the direction of the current, as we can see in figure \ref{fig:TW_small_neg}. If we set the initial velocity to high, the effects of the thermal wind shear become too small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
 			
 			\begin{figure}[h]
 				\centering
@@ -694,10 +689,6 @@ The goal of this thesis is to ...
 
 	\newpage
 \section{Appendix / Code}
-	\subsection{Navier-Stokes equation}
-
-		Which code should be added here, if any?
-		\todoFormat{none!}
 	
 	\subsection{Thermal Wind}
 	
@@ -805,3 +796,79 @@ The goal of this thesis is to ...
 	
 \pagebreak
 \end{document}
+
+% % Gleichungen für u(r,phi,z), v(r,phi,z), w(r,phi,z)
+%			\begin{eqnarray}
+%				\frac{\partial u(r,\phi,z)}{\partial t} &=& \frac{u'(r,\phi,z)- u(r,\phi,z)}{\delta t}
+%				\nonumber \\
+%				&=& \frac{1}{Re} \bigg( \frac{u(r+\delta r,\phi,z)-2u(r,\phi,z)+u(r-\delta r,\phi,z)}{(\delta r)^2}
+%				\nonumber \\
+%								&&	+ \frac{1}{r}\frac{u(r+\delta r,\phi,z)-u(r-\delta r,\phi,z)}{2\delta r}
+%				\nonumber \\
+%								&&	+ \frac{1}{r^2}\frac{u(r,\phi+\delta\phi,z)-2u(r,\phi,z)+u(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
+%				\nonumber \\
+%								&&	+ \frac{u(r,\phi,z+\delta z)-2u(r,\phi,z)+u(r,\phi,z-\delta z)}{(\delta z)^2}
+%				\nonumber \\
+%								&&	- \frac{u(r,\phi, z)}{r^2}
+%									- \frac{2}{r^2}\frac{v(r,\phi+\delta\phi,z)-v(r,\phi-\delta\phi,z)}{2\delta\phi} \bigg)
+%				\nonumber \\
+%				&&	+ \frac{v^2(r,\phi,z)}{r}
+%					- u(r,\phi,z)\frac{u(r+\delta r,\phi,z)-u(r-\delta r,\phi,z)}{2\delta r}
+%				\nonumber \\
+%				&&	- \frac{v(r,\phi,z)}{r}\frac{u(r,\phi+\delta\phi,z)-u(r,\phi-\delta\phi,z)}{2\delta\phi}
+%				\nonumber \\
+%				&&	- w(r,\phi,z)\frac{u(r,\phi,z+\delta z)-u(r,\phi,z-\delta z)}{2\delta z}
+%				\nonumber \\
+%				&&	- \frac{p(r+\delta r,\phi, z)-p(r-\delta r,\phi,z)}{2\delta r}
+%					+ 2\Omega v(r,\phi,z)
+%					+ \Omega^2 r
+%				\label{eq:Discrete u}
+%			\end{eqnarray}
+%			
+%			\begin{eqnarray}
+%				\frac{\partial v(r,\phi,z)}{\partial t} &=& \frac{v'(r,\phi,z)- v(r,\phi,z)}{\delta t}
+%				\nonumber \\
+%				&=& \frac{1}{Re} \bigg( \frac{v(r+\delta r,\phi,z)-2v(r,\phi,z)+v(r-\delta r,\phi,z)}{(\delta r)^2}
+%				\nonumber \\
+%								&&	+ \frac{1}{r}\frac{v(r+\delta r,\phi,z)-v(r-\delta r,\phi,z)}{2\delta r}
+%				\nonumber \\
+%								&&	+ \frac{1}{r^2}\frac{v(r,\phi+\delta\phi,z)-2v(r,\phi,z)+v(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
+%				\nonumber \\
+%								&&	+ \frac{v(r,\phi,z+\delta z)-2v(r,\phi,z)+v(r,\phi,z-\delta z)}{(\delta z)^2}
+%				\nonumber \\
+%								&&	- \frac{v(r,\phi, z)}{r^2}
+%									- \frac{2}{r^2}\frac{u(r,\phi+\delta\phi,z)-u(r,\phi-\delta\phi,z)}{2\delta\phi} \bigg)
+%				\nonumber \\
+%				&&	+ \frac{u(r,\phi,z)\cdot v(r,\phi,z)}{r}
+%					- u(r,\phi,z)\frac{v(r+\delta r,\phi,z)-v(r-\delta r,\phi,z)}{2\delta r}
+%				\nonumber \\
+%				&&	- \frac{v(r,\phi,z)}{r}\frac{v(r,\phi+\delta\phi,z)-v(r,\phi-\delta\phi,z)}{2\delta\phi}
+%				\nonumber \\
+%				&&	- w(r,\phi,z)\frac{v(r,\phi,z+\delta z)-v(r,\phi,z-\delta z)}{2\delta z}
+%				\nonumber \\
+%				&&	- \frac{1}{r}\frac{p(r,\phi+\delta\phi, z)-p(r,\phi-\delta\phi,z)}{2\delta \phi}
+%					+ 2\Omega u(r,\phi,z)
+%				\label{eq:Discrete v}
+%			\end{eqnarray}
+%			
+%			\begin{eqnarray}
+%				\frac{\partial w(r,\phi,z)}{\partial t} &=& \frac{w'(r,\phi,z)- w(r,\phi,z)}{\delta t}
+%				\nonumber \\
+%				&=& \frac{1}{Re} \bigg( \frac{w(r+\delta r,\phi,z)-2w(r,\phi,z)+w(r-\delta r,\phi,z)}{(\delta r)^2}
+%				\nonumber \\
+%								&&	+ \frac{1}{r}\frac{w(r+\delta r,\phi,z)-w(r-\delta r,\phi,z)}{2\delta r}
+%				\nonumber \\
+%								&&	+ \frac{1}{r^2}\frac{w(r,\phi+\delta\phi,z)-2w(r,\phi,z)+w(r,\phi-\delta\phi,z)}{(\delta \phi)^2}
+%				\nonumber \\
+%								&&	+ \frac{w(r,\phi,z+\delta z)-2w(r,\phi,z)+w(r,\phi,z-\delta z)}{(\delta z)^2} \bigg)
+%				\nonumber \\
+%				&&	- u(r,\phi,z)\frac{w(r+\delta r,\phi,z)-w(r-\delta r,\phi,z)}{2\delta r}
+%				\nonumber \\
+%				&&	- \frac{v(r,\phi,z)}{r}\frac{w(r,\phi+\delta\phi,z)-w(r,\phi-\delta\phi,z)}{2\delta\phi}
+%				\nonumber \\
+%				&&	- w(r,\phi,z)\frac{w(r,\phi,z+\delta z)-w(r,\phi,z-\delta z)}{2\delta z}
+%				\nonumber \\
+%				&&	- \frac{1}{r}\frac{p(r,\phi,z+\delta z)-p(r,\phi,z-\delta z)}{2\delta z}
+%					- g
+%				\label{eq:Discrete w}
+%			\end{eqnarray}
