@@ -110,7 +110,7 @@
 \mbox{}
 \newpage
 \abstract
-The goal of this thesis is to ...
+	The main goal of this thesis is to simulate the experiment on the computer and compare the results with the expectations from the theory and the experiment. The simulation is done by numerically solving the Navier-Stokes equation for a rotating cylindrical tank using the Finite Difference Method.
 
 \newpage
 \tableofcontents
@@ -118,33 +118,31 @@ The goal of this thesis is to ...
 
 
 \section{Introduction}
-	\todoWriteMore{This needs more explanation...}
 	\todoFormat{Change size of captions}
-	\todo{Einheitliche Schreibweise der NSG (mit/ohne Bindestrich, usw).}
+	\todoFormat{Einheitliche Schreibweise für Ableitungen einführen. Welche ist besser?}
 
-	The dynamics of the ocean and the atmosphere have a major impact on the climate. Therefore, understanding these dynamics is an important subject for environmental studies. \\
-	In the Lab Course, physics students of the University of Berne get a chance to investigate the properties of some principal large scale atmospheric and oceanic circulations in a water tank. In the experiment a relatively simple isolated system is observed. A water-filled plexiglass tank is placed on a turntable and rotated at a constant speed. By placing an obstacle on the ground of the tank, applying speed change, or installing an ice-filled vessel in the center of the tank, basic circulation phenomena can be observed. The experimental set up is shown in figure \ref{fig:Experiment}.\linebreak
+	The dynamics of the ocean and the atmosphere have a major impact on the climate. Horizontal currents in the ocean, for example, can carry warmed or cooled water as far as several thousand kilometres. This water can the influence the temperature of the air above it and therefore of the regions, where this air is blown. A well known example of this heat transport is the ``Gulf Stream'', which moves warm water north, across the Atlantic ocean, and causes a rather mild climate in Western Europe. Because they have such an influence on our climate, understanding these dynamics is an important subject for environmental studies. \\
+	
+	In the Lab Course, physics students of the University of Berne get a chance to investigate the properties of some principal large scale atmospheric and oceanic circulations in a water tank. In the experiment a relatively simple isolated system is observed. A water-filled plexiglass tank is placed on a turntable and rotated at a constant speed. By placing an obstacle on the ground of the tank, applying speed change, or installing an ice-filled vessel in the center of the tank, basic circulation phenomena can be observed. The experimental set up is shown in figure \ref{fig:Experiment}.
 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.4\textwidth]{Experiment.jpg}
-		\caption{A tank is set on a turntable, and can be viewed through a co-rotating overhead camera. The tank can be filled with water and an ice bucket in the center. Picture from \cite{Schneider}}
+		\caption{A tank is set on a turntable, which can be rotated at different speeds. The tank can be viewed through a co-rotating overhead camera. Picture from \cite{Schneider}}
 		\label{fig:Experiment}
 	\end{figure}
-	\todoEnglish{this caption is bs}
 
 	The observable phenomena include Taylor columns, Ekman layers and spirals, western boundary currents and due to the temperature gradient that is induced by the ice bucket, thermal wind, Hadley circulation and baroclinic eddies.
 	
 	All of these phenomena can be explained with one equation, the Navier-Stokes equation, and certain idealizations and assumptions. The equation and the idealizations are explained in chapter 2, based on the book ``Atmosphere, ocean and climate dynamics: an introductory text" from John Marshall and Alan Plumb \cite{Marshall1965}.
 	
-	
 	\subsection{Goals}
-	\todoWriteMore{what is the goal of this thesis: \\ numerical solution of nsg and visualization of the solution to compare it with the experiment.}
 	
-	The main goal of this thesis is to simulate the experiment on the computer and compare the results with the expectations from the theory and the experiment. The simulation is done by numerically solving the Navier-Stokes equation for a rotating cylindrical tank using the Finite Difference Methon in Python. \todoWriteMore{Besser ausführen, mehr Text}
+	This thesis should give a first insight into climate modeling and numerical simulation and a basic understanding of the large scale flows that are mentioned above.
+		
+	The main goal of this thesis is to simulate the experiment on the computer and compare the results with the expectations from the theory and the experiment. The simulation is done by numerically solving the Navier-Stokes equation for a rotating cylindrical tank using the Finite Difference Methon in Python.
+	We chose to use Python, because it is widely used in various fields and offers a free, easy to use scientific data visualizer, MayaVi. Another advantage was that Python is considered easy to learn, because it has a clear and concise syntax.
 	Furthermore, the thesis should give a first insight into climate modeling and numerical simulation. 
-	
-	Handling the programming language Python should be learned from scratch. \todoEnglish{besser formulieren}
 	
 %	The main goal is to numerically solve the Navier-Stokes equation for a rotating cylindrical tank and visualize the results in a vector plot. 
 %	
@@ -188,13 +186,6 @@ The goal of this thesis is to ...
 		\end{equation}
 		which gives us a non-divergent flow.
 		
-		The evolution of temperature is governed by the thermodynamic equation
-		\begin{equation}
-			\frac{DQ}{Dt} = c_p \frac{DT}{Dt} - \frac{1}{\rho} \frac{Dp}{Dt}
-			\label{eq:Thermodyn}
-		\end{equation}
-		$\frac{DQ}{Dt}$ is known as diabatic heating rate per unit mass. % Hier evtl. noch etwas bla bla
-		
 		% Dieser Abschnitt ist vollständig aus Plumb-Buch (S.84ff)
 		
 		\subsubsection{Equation of motion in a rotating frame}		% Maybe as sub- instead of subsubsection
@@ -230,14 +221,14 @@ The goal of this thesis is to ...
 					\item Coriolis acceleration
 					\item Centrifugal acceleration
 					\item Gravitational acceleration
-					\item Pressure gradient
+					\item Pressure gradient acceleration
 				\end{enumerate}
 			
 			Now this is a non-linear time-space-coupled, partial differential equation of 2nd order (in space), which cannot be solved analytically and has to be treated numerically.
 			
 		\subsubsection{Non-dimensionalization}
 			
-			It is better to have the equation in a non-dimensionalized version.\todoEnglish{find a better way to say this. explain why it is important/better} Starting off with choosing a typical length $L$ and a typical velocity $U$ as references.
+		To prevent rather tedious computations in the later numerical treatment of the Navier-Stokes equation, it is desirable to use dimensionless representations of the variables, and therefore a non-dimesionalized version of the equation. Starting off with choosing a typical length $L$ and a typical velocity $U$ as references.
 			
 			\begin{equation}
 			u_i = U \cdot {u_i}^*, \quad x_i = L \cdot {x_i}^*, \quad \partial_i = \frac{1}{L}{\partial_i}^*
@@ -262,14 +253,23 @@ The goal of this thesis is to ...
 			
 			where we use Einstein notation and where $Re$ is the Reynolds number $Re = \frac{U\cdot L}{\nu}$.
 		
-		\subsubsection{Equations in component form in cylindrical coordinates}
-		\todoEnglish{find better title}
-		
+		\subsubsection{Equation of motion in component form in cylindrical coordinates}
 		Converting the equation from Cartesian coordinates to cylindrical coordinates was quite time consuming due to \\
-		\colorbox{red}{problems with the gradient and the nabla operator \\ in cylindrical coordinates}.
+		\colorbox{red}{problems with the gradient and the nabla operator in cylindrical coordinates}.
+		\todoWriteMore{This needs to be explained in a better way}
+		The components of the Navier-Stokes equation in cylindrical coordinates in a rotating frame are:
 		
-		In component form the Navier-Stokes equation in cylindrical coordinates is:
-		\todoWriteMore{write down equations in cylindrical coordinates in component form and some text with it (more explanation why it was time consuming)}
+		\begin{eqnarray}
+			\partial_t u &=& \frac{1}{Re} \Big({\partial_r}^2 u + \frac{1}{r} \partial_r u + \frac{1}{r^2} {\partial_\phi}^2 u + {\partial_z}^2 u - \frac{2}{r^2} \partial_\phi v - \frac{u}{r^2} \Big) \nonumber \\
+			&& + \frac{v^2}{r} - u \partial_r u - \frac{v}{r} \partial_\phi u - w \partial_z u + 2\Omega v + \Omega^2 r - \partial_r p \\
+			\label{eq:NSG cyl u}
+			\partial_t v &=& \frac{1}{Re} \Big({\partial_r}^2 v + \frac{1}{r} \partial_r v + \frac{1}{r^2} {\partial_\phi}^2 v + {\partial_z}^2 v - \frac{2}{r^2} \partial_\phi u - \frac{v}{r^2} \Big) \nonumber \\
+			&& + \frac{u\cdot v}{r} - u \partial_r v - \frac{v}{r} \partial_\phi v - w \partial_z v - 2\Omega u - \frac{1}{r}\partial_\phi p \\
+			\label{eq:NSG cyl v}
+			\partial_t w &=& \frac{1}{Re} \Big({\partial_r}^2 w + \frac{1}{r} \partial_r w + \frac{1}{r^2} {\partial_\phi}^2 w + {\partial_z}^2 w \Big) \nonumber \\
+			&& - u \partial_r w - \frac{v}{r} \partial_\phi w - w \partial_z w - \partial_z p - g
+			\label{eq:NSG cyl w}
+		\end{eqnarray}
 		
 		
 	\subsection{Hydrostatic Balance}
@@ -351,7 +351,7 @@ The goal of this thesis is to ...
 	
 	
 	\subsection{Staggered Grid} % Mehr Text, evtl. mehr Erklärung zum Grid
-		To discretize our problem, we need to discretize our tank first. Because we were expecting a lot of time steps and due to pressure readjustment (see below) even more calculation steps inside every time step, we chose to use a staggered grid, instead of an grid where every value is being calculated at every point. This should save us a lot of calculation time. It also makes sense because, in the discretized equations, we often need to access the neighboring points. With a staggered grid, the step size can thus be cut in half. This way we might be able to avoid instabilities like oscillations of the solution.
+		To discretize our problem, we need to discretize our tank first. We were expecting a lot of time steps and, due to pressure readjustment (see below), even more calculation steps inside every time step. Therefore, we chose to use a staggered grid, instead of an grid where every value is being calculated at every point. This should save us a lot of calculation time. It also makes sense because, in the discretized equations (\ref{eq:Discrete u} - \ref{eq:Discrete w}), we often need to access the neighboring points. With a staggered grid, the step size can thus be cut in half. This way we might be able to avoid instabilities like oscillations of the solution.
 		
 		On the staggered grid, the velocity components and the pressure are calculated at different points. Figure \ref{fig:Grid} shows a section of the grid that was used.
 		
@@ -362,8 +362,9 @@ The goal of this thesis is to ...
 			\label{fig:Grid}
 		\end{figure}
 		
-		One problem that occurred during the evolution of this project was the treatment of the point in the center of the tank. Maintaining the grid up to the center yields $n_\phi$ grid points which all describe the same location and should therefore have the same value. We could also use just one point in the center, and all surrounding points of the grid would then access this point. We also tried either calculating or setting the value(s) of the point(s) in the center.
-		\todoEnglish{this doesn't sound good yet.}
+		One problem that occurred during the evolution of this project was the treatment of the point in the center of the tank. Maintaining the grid up to the center yields $n_\phi$ grid points which all describe the same location and should therefore have the same value. However, it could happen, that we don't calculate the exact same value at every angle. We have therefore tried different variants of center treatment. We tried to average the value of the points in the center. Another idea was to use only one point in the center, and all surrounding points of the grid would then access this point. With only one point in the center we could still either calculate or set the value of this point.
+		
+		Another question was, if we need the radial, azimuthal or vertical velocity in the center. In the latest version, we decided to have the value of the pressure set in the center and calculate one value for the vertical velocity $w$. 
 		
 	\subsection{Discretization} % Mehr einleitender Text vor Unterkapitel
 		Next we need to discretize the equation of motion in cylindrical coordinates (\ref{eq:NonDim NSG}) and (\ref{eq:Thermal Wind}). Therefore, we need to change all derivatives to finite differences. 
@@ -386,10 +387,9 @@ The goal of this thesis is to ...
 				\label{eq:2CentrDiv Space}
 			\end{eqnarray}
 			
-			Applying the forward finite difference on the left-hand side of equation \todoRef{Ref auf Komponentenform der NSG} and solving for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$, hands us the following discrete equations:
-			\todoFormat{u\_p durch u ersetzen?}
+			We apply the forward finite difference on the left-hand side of equation (\ref{eq:NSG cyl u}), (\ref{eq:NSG cyl v}) and (\ref{eq:NSG cyl w}) and solve for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$. Applying the grid, with $i$ as the radial index, $j$ as the azimuthal and $k$ as the vertical index, hands us the following discrete equations:
 			
-			{\allowdisplaybreaks
+			%{\allowdisplaybreaks
 			\begin{eqnarray}
 				u'[i,j,k] &=& u[i,j,k]	\nonumber \\
 				&& +\delta t \Bigg[\frac{1}{Re}\bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}	\nonumber \\
@@ -399,22 +399,21 @@ The goal of this thesis is to ...
 				&& - \frac{u[i,j,k]}{{r_u}^2}\bigg) - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}	\nonumber \\
 				&& + \frac{1}{r_u}\bigg(\left(v_u[i,j,k]\right)^2 - v_u[i,j,k] \cdot \frac{u[i,j+1,k]-u[i,j-1,k]}{2\delta \phi}\bigg)	\nonumber \\
 				&& - w_u[i,j,k] \cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u	\nonumber \\
-				&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r} \Bigg]
+				&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r} \Bigg] ,
 				\label{eq:Discrete u}
 			\end{eqnarray}
-			
+			%}
 			\begin{eqnarray}
 				v'[i,j,k] &=& v[i,j,k]	\nonumber \\
 				&& + \delta t \Bigg[ \frac{1}{Re} \bigg( \frac{v[i+1,j,k]-2 v[i,j,k]+v[i-1,j,k]}{(\delta r)^2}	\nonumber \\
 				&& + \frac{1}{{r_p}^2} \frac{v[i,j+1,k]-2v[i,j,k]+v[i,j-1,k]}{(\delta \phi)^2}	\nonumber \\
 				&& + \frac{v[i,j,k+1]-2v[i,j,k]+v[i,j,k-1]}{(\delta z)^2}	\nonumber \\
-				&& + \frac{2}{{r_p}^2} \frac{u_p[i,j,k]-u_p[i,j+1,k]}{\delta\phi} - \frac{v[i,j,k]}{{r_p}^2} \bigg) \nonumber \\
-				&& + \bigg( \frac{1}{Re\cdot r_p} - u_v[i,j,k] \bigg) \cdot \frac{v[i+1,j,k]-v[i-1,j,k]}{2\delta r} \nonumber \\
-				&& - \frac{v[i,j,k] \cdot u_v[i,j,k]}{r_p} \nonumber \\
-				&& - \frac{v[i,j,k]}{r_p}\cdot \frac{v[i,j+1,k]-v[i,j-1,k]}{2\delta \phi} \nonumber \\
+				&& + \frac{2}{{r_p}^2} \frac{\frac{1}{2}\left(u[i,j,k]+u[i-1,j,k]\right)-\frac{1}{2}\left(u[i,j+1,k]+u[i-1,j+1,k]\right)}{\delta\phi} \nonumber \\
+				&& - \frac{v[i,j,k]}{{r_p}^2} \bigg) + \bigg( \frac{1}{Re\cdot r_p} - u_v[i,j,k] \bigg) \cdot \frac{v[i+1,j,k]-v[i-1,j,k]}{2\delta r} \nonumber \\
+				&& - \frac{v[i,j,k] \cdot u_v[i,j,k]}{r_p} - \frac{v[i,j,k]}{r_p}\cdot \frac{v[i,j+1,k]-v[i,j-1,k]}{2\delta \phi} \nonumber \\
 				&& - w_v[i,j,k] \cdot \frac{v[i,j,k+1]-v[i,j,k-1]}{2\delta z} \nonumber \\
 				&& - 2\Omega\cdot u_v[i,j,k] - \frac{1}{r_p} \frac{p[i,j+1,k]-p[i,j,k]}{\delta \phi}
-				\Bigg]
+				\Bigg] ,
 				\label{eq:Discrete v}
 			\end{eqnarray}
 						
@@ -427,20 +426,20 @@ The goal of this thesis is to ...
 				&& - \frac{v_w[i,j,k]}{r_p} \frac{w[i,j+1,k]-w[i,j-1,k]}{2\delta \phi} \nonumber \\
 				&& - w[i,j,k] \frac{w[i,j,k+1]-w[i,j,k-1]}{2\delta z} \nonumber \\
 				&& - \frac{p[i,j,k+1]-p[i,j,k]}{\delta z} -g
-				\Bigg]
+				\Bigg] ,
 				\label{eq:Discrete w}
 			\end{eqnarray}
-			}
 			
-			Where $i$ is the radial index, $j$ the azimuthal and $k$ the vertical index. $r_u$ is the radius at the position $i$ on the $u$-grid, and $r_p$ is the radius at the position $i$ on the $p$-, $v$-, or $w$-grid.
 			
-			Wherever we need to access the value of a component at a point where its grid has no value, the value of the component is interpolated linearly. These interpolations are then shortened to $u_v$ for the value of $u$ on the grid of $v$ and so on.
+			where $r_u$ is the radius at the position $i$ on the $u$-grid, and $r_p$ is the radius at the position $i$ on the $p$-, $v$-, or $w$-grid.
+			
+			Wherever we need to access the value of a component at a point where its grid has no value, the value of the component is interpolated linearly. These interpolations are then shortened to $u_v$ for the value of $u$ on the grid of $v$, $v_u$ for the value of $v$ on the grid of $u$, and so on.
 			
 			\begin{eqnarray}
-				% v_p[i,j,k] = \frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right) %-> kann man verwenden, macht aber nicht so sinn
+				%v_p[i,j,k] = \frac{1}{2}\left(v[i,j,k]+v[i,j-1,k]\right) %-> kann man verwenden, macht aber nicht so sinn
 				v_u[i,j,k] &=& \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4} \nonumber \\
 				w_u[i,j,k] &=& \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}	\nonumber \\
-				u_p[i,j,k] &=& \frac{u[i,j,k]+u[i-1,j,k]}{2} \nonumber \\ % aus konsistenzgründen lieber darauf verzichten?
+				%u_p[i,j,k] &=& \frac{u[i,j,k]+u[i-1,j,k]}{2} \nonumber \\ % aus konsistenzgründen lieber darauf verzichten?
 				u_v[i,j,k] &=& \frac{u[i,j,k]+u[i-1,j,k]+u[i,j+1,k]+u[i-1,j+1,k]}{4} \nonumber \\
 				w_v[i,j,k] &=& \frac{w[i,j,k]+w[i,j+1,k]+w[i,j,k-1]+w[i,j+1,k-1]}{4} \nonumber \\
 				u_w[i,j,k] &=& \frac{u[i,j,k]+u[i-1,j,k]+u[i,j,k+1]+u[i-1,j,k+1]}{4} \nonumber \\
@@ -450,10 +449,11 @@ The goal of this thesis is to ...
 			We now have three expressions which only depend on the previous time step and the pressure. Therefore we need to readjust the pressure after every time step, which is done in section 3.3 .
 			
 		\subsubsection{Thermal wind equation}
-			To discretize the thermal wind equation (\ref{eq:Thermal Wind}), we use a forward difference for the first derivative of the azimuthal velocity with respect to $z$ and a centred difference for the first derivative of $T$. Solving these equation for $v(r,\phi, z+1)$ yields
+			To discretize the thermal wind equation (\ref{eq:Thermal Wind}), we use a forward difference for the first derivative of the azimuthal velocity with respect to $z$ and a centred difference for the first derivative of $T$. Solving these equation for $v(r,\phi, z+1)$, and again using the indices $[i,j,k]$ instead of $(r,\phi,z)$, yields
 			
 			\begin{equation}
-				v(r,\phi, z+1) = v(r,\phi,z) + \delta z \frac{\alpha g}{2\Omega} \frac{T(r+1,\phi,z) - T(r-1,\phi, z)}{2 \delta z}
+			v[i,j,k+1] = v[i,j,k] + \delta z \frac{\alpha g}{2\Omega} \frac{T[i+1,j,k]-T[i,j,k]}{\delta r}
+%				v(r,\phi, z+1) = v(r,\phi,z) + \delta z \frac{\alpha g}{2\Omega} \frac{T(r+1,\phi,z) - T(r-1,\phi, z)}{2 \delta z}
 				\label{eq:Discrete Thermal v}
 			\end{equation}
 		
@@ -467,7 +467,7 @@ The goal of this thesis is to ...
 		\end{equation}
 		
 		% Hier Referenz zum Fluiddynamik.pdf
-		A Poisson equation can be solved with a modified Richardson iteration. \todoRef{Fluiddynamik und Wiki} \cite{WikiRichardson} % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
+		A Poisson equation can be solved with a modified Richardson iteration. \todoRef{Mehr zur Referenz schreiben} \cite{WikiRichardson} % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
 		
 		\begin{eqnarray}
 			p_{n+1} &=& p_n - \lambda \left(f(\vec{u}) - \Delta p_n\right)
@@ -495,7 +495,7 @@ The goal of this thesis is to ...
 			\label{eq:CFL}
 		\end{equation}
 		 
-		which must be satisfied, in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow. \cite{Stocker2009}
+		which must be satisfied, in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow \cite{Stocker2009}.
 		We choose our time step $\delta t$ to be small enough for the given $U_i$ and $\delta x_i$.
 		
 		
@@ -513,31 +513,7 @@ The goal of this thesis is to ...
 			
 			Applying the discrete versions of the components of the Navier-Stokes equation, (\ref{eq:Discrete u}), (\ref{eq:Discrete v}) and (\ref{eq:Discrete w}) on the staggered grid far from the tank edges, gives us equations like the following to calculate the velocity at the time $t + \delta t$.
 			
-			{\allowdisplaybreaks
-			\begin{eqnarray}
-				u'[i,j,k] &= u[i,j,k] + \delta t \Bigg(& \frac{1}{Re}\Bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}
-				\nonumber \\
-				&& + \frac{1}{{r_u}^2}\frac{u[i,j+1,k]-2u[i,j,k]+u[i,j-1,k]}{(\delta \phi)^2}
-				\nonumber \\
-				&& + \frac{u[i,j,k+1] - 2u[i,j,k] +u[i,j,k-1]}{(\delta z)^2}
-				\nonumber \\
-				&& - \frac{2}{{r_u}^2}\frac{\frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right)-\frac{1}{2}\left(v[i+1,j-1,k]+v[i,j-1,k]\right)}{\delta \phi}
-				\nonumber \\
-				&& - \frac{u[i,j,k]}{{r_u}^2}\Bigg) - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}
-				\nonumber \\
-				&& + \frac{1}{r_u}\Bigg(\left(\frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}\right)^2
-				\nonumber \\
-				&& - \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}
-				\nonumber \\
-				&&\cdot \frac{u[i,j+1,k]-u[i,j-1,k]}{2\delta \phi}\Bigg)
-				\nonumber \\
-				&& - \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}
-				\nonumber \\
-				&&\cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u
-				\nonumber \\
-				&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r} \Bigg)
-			\end{eqnarray}
-			}
+			% Hier war die Formel (nun unter dem Doc)
 			
 			Where $i$ is the radial index, $j$ the azimuthal and $k$ the vertical index. $r_u$ is the radius at the position $i$ on the $u$-grid. $v'$ and $w'$ are calculated analogously, but on their own grid, hence we use $r_p$, the radius at the position $i$ on the $p$-, $v$- and $w$-grid, instead of $r_u$ for example.
 			
@@ -570,7 +546,7 @@ The goal of this thesis is to ...
 			
 			We could not find out whether the divergence of the velocity was connected to a mistake in the program or to a numerical mistake. Since it is a rather long program with long equations and many similar looking terms, it is highly probable that there are still many unseen mistakes or typing errors inside the program.
 			
-			We further suggest that the pressure adjustment method proposed by \citet{Schmittfull2005} may not be suitable for the simulation of a three-dimensional water tank; although our adoption from two dimensions to three dimensions may also be flawed.
+			We further suggest that the pressure adjustment method proposed by \cite{Schmittfull2005} may not be suitable for the simulation of a three-dimensional water tank; although our adoption from two dimensions to three dimensions may also be flawed.
 			
 			If the attempt at simulating a cylindrical water tank is repeated, we recommend using the vorticity formulation of the Navier-Stokes equation, in which the pressure does not appear.
 			
@@ -656,7 +632,12 @@ The goal of this thesis is to ...
 				\caption{Visualization of the velocity with a small initial velocity $|\vec{u}|<<1$. Left: $|\vec{u}|>0$, right: $|\vec{u}|<0$.}
 			\end{figure}
 			
-			\begin{figure}[hb]
+			
+			For small velocities in the lowest simulated layer the induced current is still clearly visible and is strong enough to turn the direction of the current, as we can see in figure \ref{fig:TW_small_neg}. If we set the initial velocity to high, the effects of the thermal wind shear become too small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
+			
+			All in all, the results of the simulation show the effects, that we expected. 
+			
+			\begin{figure}[H]
 				\centering
 				\subfloat{
 					\includegraphics[width=0.5\textwidth]{InVBigPosF.jpg}
@@ -667,12 +648,6 @@ The goal of this thesis is to ...
 					\qquad
 				\caption{Visualization of the velocity with a big initial velocity $|\vec{u}| \approx 1$. Left: $|\vec{u}|>0$, right: $|\vec{u}|<0$}
 			\end{figure}
-			
-			For small velocities in the lowest simulated layer the induced current is still clearly visible and is strong enough to turn the direction of the current, as we can see in figure \ref{fig:TW_small_neg}. If we set the initial velocity to high, the effects of the thermal wind shear become too small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
-			
-
-			
-			All in all, the results of the simulation show the effects, that we expected. 
 	\newpage
 \section{Conclusion}
 	% weg über ROtation der GLeichung wäre besser gewesen
@@ -684,9 +659,7 @@ The goal of this thesis is to ...
 	
 	- Gained a lot understanding of how numerical solutions are done.
 	
-	- Better understanding of ocean and atmosphere dynamics and where certain winds or circulations come from.
-	
-	
+	- Better understanding of ocean and atmosphere dynamics and where certain winds or circulations come from
 	
 	\newpage
 	
@@ -881,3 +854,30 @@ The goal of this thesis is to ...
 %					- g
 %				\label{eq:Discrete w}
 %			\end{eqnarray}
+
+%			Endformel u:
+%			{\allowdisplaybreaks
+%			\begin{eqnarray}
+%				u'[i,j,k] &= u[i,j,k] + \delta t \Bigg(& \frac{1}{Re}\Bigg(\frac{u[i+1,j,k]-2u[i,j,k]+u[i-1,j,k]}{(\delta r)^2}
+%				\nonumber \\
+%				&& + \frac{1}{{r_u}^2}\frac{u[i,j+1,k]-2u[i,j,k]+u[i,j-1,k]}{(\delta \phi)^2}
+%				\nonumber \\
+%				&& + \frac{u[i,j,k+1] - 2u[i,j,k] +u[i,j,k-1]}{(\delta z)^2}
+%				\nonumber \\
+%				&& - \frac{2}{{r_u}^2}\frac{\frac{1}{2}\left(v[i+1,j,k]+v[i,j,k]\right)-\frac{1}{2}\left(v[i+1,j-1,k]+v[i,j-1,k]\right)}{\delta \phi}
+%				\nonumber \\
+%				&& - \frac{u[i,j,k]}{{r_u}^2}\Bigg) - \left(\frac{1}{Re\cdot r_u} - u[i,j,k]\right)\frac{u[i+1,j,k]-u[i-1,j,k]}{2\delta r}
+%				\nonumber \\
+%				&& + \frac{1}{r_u}\Bigg(\left(\frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}\right)^2
+%				\nonumber \\
+%				&& - \frac{v[i,j,k]+v[i,j-1,k]+v[i+1,j-1,k]+v[i+1,j,k]}{4}
+%				\nonumber \\
+%				&&\cdot \frac{u[i,j+1,k]-u[i,j-1,k]}{2\delta \phi}\Bigg)
+%				\nonumber \\
+%				&& - \frac{w[i,j,k]+w[i+1,j,k]+w[i,j,k-1]+w[i+1,j,k-1]}{4}
+%				\nonumber \\
+%				&&\cdot \frac{u[i,j,k+1]-u[i,j,k-1]}{2\delta z} + \Omega^2 r_u
+%				\nonumber \\
+%				&& - \frac{p[i+1,j,k]-p[i,j,k]}{\delta r} \Bigg)
+%			\end{eqnarray}
+%			}
