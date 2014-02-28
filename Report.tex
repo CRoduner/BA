@@ -9,10 +9,9 @@
 
 \usepackage{amsmath}
 \usepackage[]{units}
-\usepackage[]{natbib}
+%\usepackage[]{natbib}
 %\usepackage[backend=bibtex, style=numeric-comp]{biblatex}
 %\bibliography{BALib.bib}
-
 
 \usepackage{listings}
 \usepackage{color}
@@ -108,31 +107,35 @@
 \newpage
 \thispagestyle{empty}
 \mbox{}
+
 \newpage
 \abstract
-	The main goal of this thesis is to simulate the experiment on the computer and compare the results with the expectations from the theory and the experiment. The simulation is done by numerically solving the Navier-Stokes equation for a rotating cylindrical tank using the Finite Difference Method.
+	The goal of this project is to numerically solve the Navier-Stokes equation for a rotating cylindrical water-filled tank using the finite difference method.
+	In the thesis the Navier-Stokes equation is transformed into a rotating frame, converted into cylindrical coordinates and discretized. The area of the water tank is discretized by applying a staggered grid.
+	The solution for one special case - the phenomenon of thermal wind - is implemented and visualized in Python and MayaVi. Due to problems with the readjustment of the pressure during the calculations, the Navier-Stokes equation could not be solved.
 
 \newpage
 \tableofcontents
 \newpage
+\listoffigures
+\newpage
 
 
 \section{Introduction}
-	\todoFormat{Change size of captions}
-	\todoFormat{Einheitliche Schreibweise für Ableitungen einführen. Welche ist besser?}
 
-	The dynamics of the ocean and the atmosphere have a major impact on the climate. Horizontal currents in the ocean, for example, can carry warmed or cooled water as far as several thousand kilometres. This water can the influence the temperature of the air above it and therefore of the regions, where this air is blown. A well known example of this heat transport is the ``Gulf Stream'', which moves warm water north, across the Atlantic ocean, and causes a rather mild climate in Western Europe. Because they have such an influence on our climate, understanding these dynamics is an important subject for environmental studies. \\
+	The dynamics of the ocean and the atmosphere have a major impact on the climate. Horizontal currents in the ocean, for example, can carry warmed or cooled water as far as several thousand kilometres. This water influences the temperature of the air above it and therefore of the regions where this air is blown. A well known example of this heat transport is the ``Gulf Stream'', which moves warm water north, across the Atlantic ocean, and causes a rather mild climate in Western Europe. Because they have such an influence on our climate, understanding these dynamics is an important subject for environmental studies. \\
 	
 	In the Lab Course, physics students of the University of Berne get a chance to investigate the properties of some principal large scale atmospheric and oceanic circulations in a water tank. In the experiment a relatively simple isolated system is observed. A water-filled plexiglass tank is placed on a turntable and rotated at a constant speed. By placing an obstacle on the ground of the tank, applying speed change, or installing an ice-filled vessel in the center of the tank, basic circulation phenomena can be observed. The experimental set up is shown in figure \ref{fig:Experiment}.
 
 	\begin{figure}[H]
 		\centering
+		\captionsetup{width=0.9\textwidth}
 		\includegraphics[width=0.4\textwidth]{Experiment.jpg}
-		\caption{A tank is set on a turntable, which can be rotated at different speeds. The tank can be viewed through a co-rotating overhead camera. Picture from \cite{Schneider}}
+		\caption[Experimental set-up]{A tank is set on a turntable, which can be rotated at different speeds. The tank can be viewed through a co-rotating overhead camera. Picture from \cite{Schneider}}
 		\label{fig:Experiment}
 	\end{figure}
 
-	The observable phenomena include Taylor columns, Ekman layers and spirals, western boundary currents and due to the temperature gradient that is induced by the ice bucket, thermal wind, Hadley circulation and baroclinic eddies.
+	The observable phenomena include Taylor columns, Ekman layers and spirals, western boundary currents and, due to the temperature gradient that is induced by the ice bucket, thermal wind, Hadley circulation and baroclinic eddies.
 	
 	All of these phenomena can be explained with one equation, the Navier-Stokes equation, and certain idealizations and assumptions. The equation and the idealizations are explained in chapter 2, based on the book ``Atmosphere, ocean and climate dynamics: an introductory text" from John Marshall and Alan Plumb \cite{Marshall1965}.
 	
@@ -153,13 +156,14 @@
 \newpage
 
 \section{Physical background}
-
+	In this chapter the basic physical background for the following calculations is provided. This includes the general Navier-Stokes equation, as well as the Navier-Stokes equation in a rotating frame in cylindrical coordinates. The simplifications and assumptions needed for hydrostatic and geostrophic balance, and especially thermal wind are explained.
+	
 	\subsection{Navier-Stokes and Continuity Equation}
 		
 		The state of the atmosphere and the ocean at any time is defined by six key variables:
 		The velocity of the fluid $\vec{u}=(u,v,w)$; pressure $p$; temperature $T$ and specific humidity in the atmosphere or salinity in the ocean. Since we are looking at fresh water in a tank, our fluid is defined by the velocity, pressure and temperature. The forces on an elementary parcel of such a fluid, following the parcel, are described by the equation of motion, known as the Navier-Stokes equation
 		\begin{equation}
-			\rho \frac{D\vec{u}}{Dt} = -\rho g \hat{\vec{z}} - \vec{\nabla} p + \rho \vec{\mathcal{F}}
+			\rho \frac{D\vec{u}}{Dt} = -\rho g \hat{\vec{z}} - \vec{\nabla} p + \rho \vec{\mathcal{F}} ,
 			\label{eq:Simple NSG}
 		\end{equation} 
 		
@@ -172,16 +176,17 @@
 		\end{equation} 
 		
 		
-		Since no mass should be given away or come in to our fluid, and no mass is converted to energy, our fluid also needs to follow conservation of mass, which leads to the continuity equation:
+		Since no mass should be given away or come into our fluid, and no mass is converted to energy, our fluid also needs to follow conservation of mass, which leads to the continuity equation:
 		\begin{equation}
-			\frac{D\rho}{Dt} + \rho \vec{\nabla} \vec{u} = 0
+			\frac{D\rho}{Dt} + \rho \vec{\nabla} \vec{u} = 0 .
 			\label{eq:Continuity}
 		\end{equation}
 		
-		The water we are studying, forms an incompressible flow, the density is constant in time % schlechte Formulierung
+		The water we are studying forms an incompressible flow, the density is constant in time % schlechte Formulierung
 		 $\frac{\partial\rho}{\partial t} =0 $, therefore we can simplify the continuity equation (\ref{eq:Continuity}) to
+		 
 		\begin{equation}
-			\vec{\nabla} \vec{u} = 0
+			\vec{\nabla} \vec{u} = 0 ,
 			\label{eq:nondivergence}
 		\end{equation}
 		which gives us a non-divergent flow.
@@ -189,9 +194,9 @@
 		% Dieser Abschnitt ist vollständig aus Plumb-Buch (S.84ff)
 		
 		\subsubsection{Equation of motion in a rotating frame}		% Maybe as sub- instead of subsubsection
-			To be used in our set up, equation (\ref{eq:Simple NSG}) needs to be transformed in to a rotating reference frame. We start by the relation of the velocity in the inertial frame $\vec{u}_{in}$ and the velocity in the rotating frame $\vec{u}_{rot}$
+			To be used in our set-up, equation (\ref{eq:Simple NSG}) needs to be transformed into a rotating reference frame. We start by the relation of the velocity in the inertial frame $\vec{u}_{in}$ and the velocity in the rotating frame $\vec{u}_{rot}$:
 			\begin{equation}
-				\vec{u}_{in} = \vec{u}_{rot} + \vec{\Omega}\times\vec{r}
+				\vec{u}_{in} = \vec{u}_{rot} + \vec{\Omega}\times\vec{r} ,
 				\label{eq:Velocity Frames}
 			\end{equation}
 			
@@ -199,7 +204,7 @@
 			
 			Using the transformation rule % given in Alan-Plumb-Book (page 94)
 			\begin{equation}
-				\left(\frac{D\vec{u}_{in}}{Dt}\right)_{in} = \left(\frac{D\vec{u}_{rot}}{Dt}\right)_{rot} + 2\vec{\Omega}\times\vec{u}_{rot} + \vec{\Omega}\times\vec{\Omega}\times\vec{r}
+				\left(\frac{D\vec{u}_{in}}{Dt}\right)_{in} = \left(\frac{D\vec{u}_{rot}}{Dt}\right)_{rot} + 2\vec{\Omega}\times\vec{u}_{rot} + \vec{\Omega}\times\vec{\Omega}\times\vec{r} ,
 				\label{eq: Lag Dev Rot}
 			\end{equation}
 			
@@ -224,21 +229,23 @@
 					\item Pressure gradient acceleration
 				\end{enumerate}
 			
-			Now this is a non-linear time-space-coupled, partial differential equation of 2nd order (in space), which cannot be solved analytically and has to be treated numerically.
+			Now this is a non-linear, time-space-coupled, partial differential equation of 2nd order (in space), which cannot be solved analytically and has to be treated numerically.
 			
 		\subsubsection{Non-dimensionalization}
 			
-		To prevent rather tedious computations in the later numerical treatment of the Navier-Stokes equation, it is desirable to use dimensionless representations of the variables, and therefore a non-dimesionalized version of the equation. Starting off with choosing a typical length $L$ and a typical velocity $U$ as references.
+			To prevent rather tedious computations in the later numerical treatment of the Navier-Stokes equation, it is desirable to use dimensionless representations of the variables, and therefore a non-dimesionalized version of the equation. We start off with choosing a typical length $L$ and a typical velocity $U$ as references:
 			
 			\begin{equation}
-			u_i = U \cdot {u_i}^*, \quad x_i = L \cdot {x_i}^*, \quad \partial_i = \frac{1}{L}{\partial_i}^*
+			u_i = U \cdot {u_i}^*, \quad x_i = L \cdot {x_i}^*, \quad \partial_i = \frac{1}{L}{\partial_i}^* ,
 			\nonumber
 			\end{equation}
 			
+			
 			where ${u_i}^*$ and ${x_i}^*$ are the dimensionless variables. Inserting this in  the equation of motion (\ref{eq: NSG}) in tensor notation gives us the dimensionless versions of the other variables
+			\pagebreak
 			
 			\begin{equation}
-			t^* = \frac{U}{L} t , \quad p^* = \frac{1}{U^2\rho} p , \quad {\Omega_j}^* = \frac{L}{U} \Omega_j , \quad g^* = \frac{L}{U^2} g
+			t^* = \frac{U}{L} t , \quad p^* = \frac{1}{U^2\rho} p , \quad {\Omega_j}^* = \frac{L}{U} \Omega_j , \quad g^* = \frac{L}{U^2} g ,
 			\nonumber
 			\end{equation}
 			
@@ -247,42 +254,43 @@
 			\begin{eqnarray}
 			{\partial_t}^*{u_i}^* &=& \frac{1}{Re}{\partial_j}^*{\partial_j}^*{u_i}^* - {u_j}^*{\partial_j}^*{u_i}^* -{\partial_i}^*p^* - g^*\hat{z}_i 
 			\nonumber \\
-			&&- 2\epsilon_{ijk}{\Omega_j}^*{u_k}^* - \epsilon_{ijk}\epsilon_{klm}{\Omega_j}^*{\Omega_l}^*{r_m}^*
+			&&- 2\epsilon_{ijk}{\Omega_j}^*{u_k}^* - \epsilon_{ijk}\epsilon_{klm}{\Omega_j}^*{\Omega_l}^*{r_m}^* ,
 			\label{eq:NonDim NSG}
 			\end{eqnarray}
 			
-			where we use Einstein notation and where $Re$ is the Reynolds number $Re = \frac{U\cdot L}{\nu}$.
+			where we use Einstein's sum convention and where $Re$ is the Reynolds number $Re = \frac{U\cdot L}{\nu}$.
 		
 		\subsubsection{Equation of motion in component form in cylindrical coordinates}
-		Converting the equation from Cartesian coordinates to cylindrical coordinates was quite time consuming due to \\
-		\colorbox{red}{problems with the gradient and the nabla operator in cylindrical coordinates}.
-		\todoWriteMore{This needs to be explained in a better way}
-		The components of the Navier-Stokes equation in cylindrical coordinates in a rotating frame are:
-		
-		\begin{eqnarray}
-			\partial_t u &=& \frac{1}{Re} \Big({\partial_r}^2 u + \frac{1}{r} \partial_r u + \frac{1}{r^2} {\partial_\phi}^2 u + {\partial_z}^2 u - \frac{2}{r^2} \partial_\phi v - \frac{u}{r^2} \Big) \nonumber \\
-			&& + \frac{v^2}{r} - u \partial_r u - \frac{v}{r} \partial_\phi u - w \partial_z u + 2\Omega v + \Omega^2 r - \partial_r p \\
-			\label{eq:NSG cyl u}
-			\partial_t v &=& \frac{1}{Re} \Big({\partial_r}^2 v + \frac{1}{r} \partial_r v + \frac{1}{r^2} {\partial_\phi}^2 v + {\partial_z}^2 v - \frac{2}{r^2} \partial_\phi u - \frac{v}{r^2} \Big) \nonumber \\
-			&& + \frac{u\cdot v}{r} - u \partial_r v - \frac{v}{r} \partial_\phi v - w \partial_z v - 2\Omega u - \frac{1}{r}\partial_\phi p \\
-			\label{eq:NSG cyl v}
-			\partial_t w &=& \frac{1}{Re} \Big({\partial_r}^2 w + \frac{1}{r} \partial_r w + \frac{1}{r^2} {\partial_\phi}^2 w + {\partial_z}^2 w \Big) \nonumber \\
-			&& - u \partial_r w - \frac{v}{r} \partial_\phi w - w \partial_z w - \partial_z p - g
-			\label{eq:NSG cyl w}
-		\end{eqnarray}
+			Converting the equation from Cartesian coordinates to cylindrical coordinates was quite time consuming, especially the conversion of the $(\vec{u} \cdot \nabla)\cdot\vec{u}$ term.
+			The components of the Navier-Stokes equation in cylindrical coordinates in a rotating frame are:
+			
+			\begin{eqnarray}
+				\partial_t u &=& \frac{1}{Re} \Big({\partial_r}^2 u + \frac{1}{r} \partial_r u + \frac{1}{r^2} {\partial_\phi}^2 u + {\partial_z}^2 u - \frac{2}{r^2} \partial_\phi v - \frac{u}{r^2} \Big) \nonumber \\
+				&& + \frac{v^2}{r} - u \partial_r u - \frac{v}{r} \partial_\phi u - w \partial_z u + 2\Omega v + \Omega^2 r - \partial_r p , 
+				\label{eq:NSG cyl u}
+				\\
+				\partial_t v &=& \frac{1}{Re} \Big({\partial_r}^2 v + \frac{1}{r} \partial_r v + \frac{1}{r^2} 
+				{\partial_\phi}^2 v + {\partial_z}^2 v - \frac{2}{r^2} \partial_\phi u - \frac{v}{r^2} \Big) \nonumber \\
+				&& + \frac{u\cdot v}{r} - u \partial_r v - \frac{v}{r} \partial_\phi v - w \partial_z v - 2\Omega u - \frac{1}{r}\partial_\phi p ,
+				\label{eq:NSG cyl v}
+				\\
+				\partial_t w &=& \frac{1}{Re} \Big({\partial_r}^2 w + \frac{1}{r} \partial_r w + \frac{1}{r^2} {\partial_\phi}^2 w + {\partial_z}^2 w \Big) \nonumber \\
+				&& - u \partial_r w - \frac{v}{r} \partial_\phi w - w \partial_z w - \partial_z p - g .
+				\label{eq:NSG cyl w}
+			\end{eqnarray}
 		
 		
 	\subsection{Hydrostatic Balance}
-		If we take a look at the vertical component of the equation of motion in a non-rotating frame (\ref{eq:Simple NSG}):
+		If we take a look at the vertical component of the equation of motion in a non-rotating frame (\ref{eq:Simple NSG}),
 		
 		\begin{eqnarray}
-		\frac{\partial w}{\partial t} = - u \frac{\partial w}{\partial x} - v \frac{\partial w}{\partial y} - w \frac{\partial w}{\partial z} - \frac{1}{\rho} \frac{\partial p}{\partial z} - g + \mathcal{F}_z
+		\frac{\partial w}{\partial t} = - u \frac{\partial w}{\partial x} - v \frac{\partial w}{\partial y} - w \frac{\partial w}{\partial z} - \frac{1}{\rho} \frac{\partial p}{\partial z} - g + \mathcal{F}_z ,
 		\label{eq:Simple NSG z}
 		\end{eqnarray}
 		
-		and if friction and the vertical acceleration $\frac{Dw}{Dt}$ are negligible, we obtain
+		and if friction and the vertical acceleration $\frac{Dw}{Dt}$ are negligible, we obtain:
 		\begin{equation}
-		\frac{\partial p}{\partial z} = -\rho g
+		\frac{\partial p}{\partial z} = -\rho g ,
 		\label{eq:Hydrostat Balance}
 		\end{equation}
 	
@@ -290,7 +298,7 @@
 		
 	\subsection{Geostrophic Balance} % Evtl. noch etwas mehr zur Rossby Zahl
 		%We assume that we already have a solid body rotation in ou system, which means that the velocity of our fluid in the rotating reference frame equals zero, $\vec{u} = 0$.
-		If we look at a system, where friction can be neglected, and which is stationary, i.e. an equilibrium is reached and $\frac{D\vec{u}}{Dt}=0$, the Navier-Stokes equation turns into
+		If we look at a system where friction can be neglected, and which is stationary, i.e. an equilibrium is reached and $\frac{D\vec{u}}{Dt}=0$, the Navier-Stokes equation turns into
 		
 		\begin{equation}
 			2\vec{\Omega} \times \vec{u} +  g\hat{\vec{z}} + \vec{\nabla} p = 0 .
@@ -308,15 +316,15 @@
 		
 %		Assuming that vertical velocities are much smaller than the horizontal ones, % from Plumb p. 102
 %		we neglect terms including the vertical velocity $w$
-		Neglecting vertical velocities, we get the geostrophic current, which is the velocity which exactly satisfies equation (\ref{eq:Geostrophic Balance})
+		Neglecting vertical velocities, we get the geostrophic current, which is the velocity which exactly satisfies equation (\ref{eq:Geostrophic Balance}):
 		
 		\begin{equation}
-			\vec{u}_g = \frac{1}{2\Omega \rho} \hat{\vec{z}} \times \vec{\nabla}p
+			\vec{u}_g = \frac{1}{2\Omega \rho} \hat{\vec{z}} \times \vec{\nabla}p .
 			\label{eq:Geostroph current}
 		\end{equation}
 		
 		\subsubsection{Thermal Wind equation}
-			So far we have assumed that the density is constant, but if temperature varies in our fluid, so does the density vary on pressure surfaces \todoEnglish{this doesn't sound good..}. We can write the density in the following form
+			So far we have assumed that the density is constant. But if the temperature varies in our fluid, also the density is not going to be constant. We can write the density in the following form:
 			
 			\begin{equation}
 				\rho = \rho_{ref} + \sigma ,
@@ -328,13 +336,13 @@
 		Now, taking the derivative with respect to $z$ of the geostrophic motion (\ref{eq:Geostroph current}), replacing $\rho$ with $\rho_{ref}$ and using the hydrostatic equation (\ref{eq:Hydrostat Balance}), gives us
 		
 		\begin{equation}
-			\frac{\partial \vec{u}_g}{\partial z} = - \frac{g}{2\Omega \rho_{ref}} \hat{\vec{z}} \times \vec{\nabla} \sigma
+			\frac{\partial \vec{u}_g}{\partial z} = - \frac{g}{2\Omega \rho_{ref}} \hat{\vec{z}} \times \vec{\nabla} \sigma ,
 		\end{equation}
 		
-		and using $\sigma \propto \alpha T$ from % PLumb Book eq. (4-4)
+		and using $\sigma \propto \alpha T$ from \cite{Marshall1965}:
 		
 		\begin{equation}
-			\frac{\partial \vec{u}_g}{\partial z} = - \frac{\alpha g}{2\Omega \rho_{ref}} \hat{\vec{z}} \times \vec{\nabla} T
+			\frac{\partial \vec{u}_g}{\partial z} = - \frac{\alpha g}{2\Omega \rho_{ref}} \hat{\vec{z}} \times \vec{\nabla} T ,
 		\end{equation}
 		
 		where $\alpha$ is the thermal expansion coefficient. This is the thermal wind relation connecting the vertical shear of the geostrophic motion to horizontal temperature gradients. In our case of the rotating water tank in cylindrical coordinates with a purely radial temperature gradient, this simplifies even more to an equation for only the azimuthal component of the velocity:
@@ -345,26 +353,26 @@
 		\end{equation}
 		
 	\newpage		
-\section{Numerical Solution
-}
-	There are different methods to numerically solve a differential equation like ours. We chose to use the finite difference method (FDM), where the considered region is decomposed into an equidistant grid and the (partial) derivations are approximated by finite differences.
+\section{Numerical Solution}
+	There are different methods to numerically solve differential equations like the ones we obtained. The model of the rotating cylinder has a very simple geometry, thus it is not necessary to have a highly flexible grid. We therefore chose to use the finite difference method (FDM), where the considered region is decomposed into an equidistant grid and the (partial) derivations are approximated by finite differences. The solution is therefore obtained stepwise. 
 	
 	
 	\subsection{Staggered Grid} % Mehr Text, evtl. mehr Erklärung zum Grid
-		To discretize our problem, we need to discretize our tank first. We were expecting a lot of time steps and, due to pressure readjustment (see below), even more calculation steps inside every time step. Therefore, we chose to use a staggered grid, instead of an grid where every value is being calculated at every point. This should save us a lot of calculation time. It also makes sense because, in the discretized equations (\ref{eq:Discrete u} - \ref{eq:Discrete w}), we often need to access the neighboring points. With a staggered grid, the step size can thus be cut in half. This way we might be able to avoid instabilities like oscillations of the solution.
+		First, we need to discretize our tank. We were expecting a lot of time steps and, due to pressure readjustment (see below), even more calculation steps inside every time step. Therefore, we chose to use a staggered grid, instead of a grid where every value is being calculated at every point. This should save us a lot of calculation time. It also makes sense because in the discretized equations (\ref{eq:Discrete u} - \ref{eq:Discrete w}), we often need to access the neighboring points. With a staggered grid, the step size can thus be cut in half. This way we might be able to avoid instabilities like oscillations of the solution.
 		
 		On the staggered grid, the velocity components and the pressure are calculated at different points. Figure \ref{fig:Grid} shows a section of the grid that was used.
 		
 		\begin{figure}[H]
 			\centering
+			\captionsetup{width=0.9\textwidth}
 			\includegraphics[width=0.5\textwidth]{Grid2.JPG}
-			\caption{Staggered grid in cylindrical coordinates. [\cite{GridFigURL}]} % von http://geophysics.geoscienceworld.org/content/68/5/1731/F1.expansion.html
+			\caption[Staggered grid in cylindrical coordinates]{Staggered grid in cylindrical coordinates. Picture taken from http://geophysics.geoscienceworld.org/content/68/5/1731/F1.expansion.html and edited.} % von http://geophysics.geoscienceworld.org/content/68/5/1731/F1.expansion.html
 			\label{fig:Grid}
 		\end{figure}
 		
-		One problem that occurred during the evolution of this project was the treatment of the point in the center of the tank. Maintaining the grid up to the center yields $n_\phi$ grid points which all describe the same location and should therefore have the same value. However, it could happen, that we don't calculate the exact same value at every angle. We have therefore tried different variants of center treatment. We tried to average the value of the points in the center. Another idea was to use only one point in the center, and all surrounding points of the grid would then access this point. With only one point in the center we could still either calculate or set the value of this point.
+		One problem that occurred during the evolution of this project was the treatment of the point in the center of the tank. Maintaining the grid up to the center yields $n_\phi$ grid points which all describe the same location and should therefore have the same value. However, it could happen that we don't calculate the exact same value at every angle. We have therefore tried different variants of center treatment. We tried to average the value of the points in the center. Another idea was to use only one point in the center, and all surrounding points of the grid would then access this point. With only one point in the center we could still either calculate or set the value of this point.
 		
-		Another question was, if we need the radial, azimuthal or vertical velocity in the center. In the latest version, we decided to have the value of the pressure set in the center and calculate one value for the vertical velocity $w$. 
+		Another question was, whether we need the radial, azimuthal or vertical velocity in the center. In the latest version, we decided to set the value of the pressure in the center and calculate one value for the vertical velocity $w$. 
 		
 	\subsection{Discretization} % Mehr einleitender Text vor Unterkapitel
 		Next we need to discretize the equation of motion in cylindrical coordinates (\ref{eq:NonDim NSG}) and (\ref{eq:Thermal Wind}). Therefore, we need to change all derivatives to finite differences. 
@@ -377,7 +385,7 @@
 				\label{eq:ForwDiv Time}
 			\end{equation}
 			
-			Away from the edge of the tank we use central difference for the calculation of the first and second spatial derivative % Was ist Ortsableitung ??
+			Away from the edge of the tank we use the central difference for the calculation of the first and second spatial derivative % Was ist Ortsableitung ??
 			
 			\begin{eqnarray}
 				\frac{\partial f(x,t)}{\partial x} &=& \frac{f(x + \delta x,t) - f(x - \delta x,t,)}{2\delta x}
@@ -387,7 +395,7 @@
 				\label{eq:2CentrDiv Space}
 			\end{eqnarray}
 			
-			We apply the forward finite difference on the left-hand side of equation (\ref{eq:NSG cyl u}), (\ref{eq:NSG cyl v}) and (\ref{eq:NSG cyl w}) and solve for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$. Applying the grid, with $i$ as the radial index, $j$ as the azimuthal and $k$ as the vertical index, hands us the following discrete equations:
+			We apply the forward finite difference on the left-hand side of equation (\ref{eq:NSG cyl u}), (\ref{eq:NSG cyl v}) and (\ref{eq:NSG cyl w}) and solve for $u'(r,\phi,z) = u(\vec{r}, t+\delta t)$, $v'(r,\phi,z) = v(\vec{r}, t+\delta t)$ and $w'(r,\phi,z) = w(\vec{r}, t+\delta t)$. Applying the grid, with $i$ as the radial, $j$ as the azimuthal and $k$ as the vertical index, hands us the following discrete equations:
 			
 			%{\allowdisplaybreaks
 			\begin{eqnarray}
@@ -449,7 +457,7 @@
 			We now have three expressions which only depend on the previous time step and the pressure. Therefore we need to readjust the pressure after every time step, which is done in section 3.3 .
 			
 		\subsubsection{Thermal wind equation}
-			To discretize the thermal wind equation (\ref{eq:Thermal Wind}), we use a forward difference for the first derivative of the azimuthal velocity with respect to $z$ and a centred difference for the first derivative of $T$. Solving these equation for $v(r,\phi, z+1)$, and again using the indices $[i,j,k]$ instead of $(r,\phi,z)$, yields
+			To discretize the thermal wind equation (\ref{eq:Thermal Wind}), we use a forward difference for the first derivative of the azimuthal velocity with respect to $z$ and a centred difference for the first derivative of $T$. Solving these equation for $v(r,\phi, z+1)$, and again using the indices $[i,j,k]$ instead of $(r,\phi,z)$, yields:
 			
 			\begin{equation}
 			v[i,j,k+1] = v[i,j,k] + \delta z \frac{\alpha g}{2\Omega} \frac{T[i+1,j,k]-T[i,j,k]}{\delta r}
@@ -459,7 +467,7 @@
 		
 			
 	\subsection{Pressure readjustment} % Evtl. mehr Erklärung, wieso diese Methode gewählt wurde
-		In the discrete expressions of the Navier-Stokes equation, we use the pressure of last time step to calculate the velocity $\vec{u}(\vec{r},t+\delta t)$. In general, this velocity will not satisfy the continuity equation of a non-divergent flow, $\vec{\nabla} \vec{u} \neq 0$. Applying divergence to equation (\ref{eq: NSG}) yields a Poisson equation for the pressure
+		In the discrete expressions of the Navier-Stokes equation, we use the pressure of the previous time step to calculate the velocity $\vec{u}(\vec{r},t+\delta t)$. In general, this velocity will not satisfy the continuity equation of a non-divergent flow, $\vec{\nabla} \vec{u} \neq 0$. Taking the divergence of equation (\ref{eq: NSG}) yields a Poisson equation for the pressure
 		
 		\begin{equation}
 			\vec{\nabla} \cdot \vec{\nabla} p = \Delta p = f(\vec{u})
@@ -467,7 +475,7 @@
 		\end{equation}
 		
 		% Hier Referenz zum Fluiddynamik.pdf
-		A Poisson equation can be solved with a modified Richardson iteration. \todoRef{Mehr zur Referenz schreiben} \cite{WikiRichardson} % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
+		A Poisson equation can be solved with a modified Richardson iteration, as suggested by \cite{Schmittfull2005}. % hier Referenz auf Wikipedia (en.wikipedia.org/wiki/Modified_Richardson_iteration)
 		
 		\begin{eqnarray}
 			p_{n+1} &=& p_n - \lambda \left(f(\vec{u}) - \Delta p_n\right)
@@ -476,12 +484,12 @@
 			\label{eq:Drucknachregelung p}
 		\end{eqnarray}
 		
-		Inserting this solution in our expressions for the velocity yields
+		Inserting this solution in our expressions for the velocity yields:
 		
 		\begin{eqnarray}
-			u'_{n+1} &=& u'_n + \lambda \partial_r (\vec{\nabla}\vec{u}'_n) \\
-			v'_{n+1} &=& v'_n + \lambda \frac{1}{r} \partial_\phi (\vec{\nabla}\vec{u}'_n) \\
-			w'_{n+1} &=& w'_n + \lambda \partial_z (\vec{\nabla}\vec{u}'_n)
+			u'_{n+1} &=& u'_n + \lambda \partial_r (\vec{\nabla}\vec{u}'_n), \\
+			v'_{n+1} &=& v'_n + \lambda \frac{1}{r} \partial_\phi (\vec{\nabla}\vec{u}'_n), \\
+			w'_{n+1} &=& w'_n + \lambda \partial_z (\vec{\nabla}\vec{u}'_n),
 			\label{eq:Drucknachregelung uvw}
 		\end{eqnarray}
 		
@@ -495,39 +503,33 @@
 			\label{eq:CFL}
 		\end{equation}
 		 
-		which must be satisfied, in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow \cite{Stocker2009}.
+		which must be satisfied in order to obtain stable numerical solutions using central differences. It links the velocity of the fluid to the resolution of the space-time grid required to resolve the flow \cite{Stocker2009}.
 		We choose our time step $\delta t$ to be small enough for the given $U_i$ and $\delta x_i$.
 		
 		
 	\newpage
 \section{Implementation and Visualization}
 
-	We chose to implement the equations in Python, since it is a widely used programming language in physics and is easy to understand and use. Python supports the use of three dimensional array, which are used to store the velocities at the grid points. For the visualisation we used MayaVi, which is a scientific data visualizer written in Python and provides the tools for 3d-vector plots.
+	We chose to implement the equations in Python, since it is a widely used programming language in physics and is easy to understand and use. Python supports the use of three dimensional arrays, which are used to store the velocities at the grid points. For the visualisation we used MayaVi, which is a scientific data visualizer written in Python and provides the tools for three dimensional vector plots.
 
 	\subsection{Numercial Solution of the Navier-Stokes equation}
 		
 		\subsubsection{The Concept}
+			The first step of the algorithm is the initialisation of the variables and initial conditions. To test the program, we set the initial velocities to zero, in order to test if the balance could be kept. For the calculations and to store the results we had to initialise a $n_r \times n_\phi \times n_z$ - matrix for every velocity component and for the pressure. \\
 			
-			First, the necessary variables are initialised and initial conditions are set. To test the program, we set the initial velocities to zero, since we wanted to prove, if the balance could be kept.
-			Then a loop over the time is started where the velocities are calculated for every time step in the following way:\\
+			The second step is the iteration over the time steps. In each time step the components of the velocity are calculated from the velocity of the previous time step, using equations (\ref{eq:Discrete u}), (\ref{eq:Discrete v}) and (\ref{eq:Discrete w}). At the edge of the tank, e.g. for $i=i_{max}$ or $k=k_{min}$, we need to use backward spatial differences and for the calculations in the center of the tank we need to use forward spatial differences - these cases are calculated separately as special cases in the code.
 			
-			Applying the discrete versions of the components of the Navier-Stokes equation, (\ref{eq:Discrete u}), (\ref{eq:Discrete v}) and (\ref{eq:Discrete w}) on the staggered grid far from the tank edges, gives us equations like the following to calculate the velocity at the time $t + \delta t$.
-			
-			% Hier war die Formel (nun unter dem Doc)
-			
-			Where $i$ is the radial index, $j$ the azimuthal and $k$ the vertical index. $r_u$ is the radius at the position $i$ on the $u$-grid. $v'$ and $w'$ are calculated analogously, but on their own grid, hence we use $r_p$, the radius at the position $i$ on the $p$-, $v$- and $w$-grid, instead of $r_u$ for example.
-			
-			At the edge of the tank, e.g. for $i=i_{max}$ or $k=K_{min}$, we need to use backward spatial differences and for the calculations in the center of the tank we need to use forward spatial differences - these cases are calculated separately as special cases in the code.\\
-			
-			The velocities that were calculated that way were not divergence free, hence the balance could not be hold, even after only one time step. Therefore, the pressure needs to be readjusted inside every time step. To do this the divergence of $\left(u'[i,j,k], v'[i,j,k], w'[i,j,k]\right)$ is calculated and the pressure readjustment equations (\ref{eq:Drucknachregelung p}) and (\ref{eq:Drucknachregelung uvw}) are applied in a while-loop, until the divergence of the velocity gets sufficiently small.
+			The velocities that were calculated that way were not divergence free, hence the balance could not be hold, even after only one time step. Therefore, the pressure needs to be readjusted inside every time step. In order to do this the divergence of $\left(u'[i,j,k], v'[i,j,k], w'[i,j,k]\right)$ is calculated and the pressure readjustment equations (\ref{eq:Drucknachregelung p}) and (\ref{eq:Drucknachregelung uvw}) are applied in a while-loop, until the divergence of the velocity gets sufficiently small.
 			After that, the next time step is calculated.
 			
+			Either inside every time step, or after the iteration over time is done, the results could be visualized.
+
 		\subsubsection{Outcome and Discussion}
 			Unfortunately we couldn't obtain any insights with the program because the calculated velocity was divergent. Even after only one time step, the initial balance of the solid body rotation was already lost. We thought that a regulation of the pressure  could fix this problem, but with pressure readjustment we still  didn't get a non-divergent velocity, although we tried different versions of pressure readjustment. 
-			For one, we tried the method presented in section 3.3, and we also tried the method presented in \cite{Schmittfull2005}
-			, which is slightly different. It uses $p_{n+1} = p_n - \lambda \vec{\nabla} \vec{u}_n$ and $u_{i_{n+1}} = u_{i_{n}} - \delta t \lambda \vec{\nabla}{\vec{u}_n}^T$. But none of these methods could fix the problem.\\
+			We tried the method presented in section 3.3, and we also tried the method described in \cite{Schmittfull2005}
+			, which is slightly different. It uses that $p_{n+1} = p_n - \lambda \vec{\nabla} \vec{u}_n$ and that $u_{i_{n+1}} = u_{i_{n}} - \delta t \lambda \vec{\nabla}{\vec{u}_n}^T$. But none of these methods could fix the problem.\\
 			
-			Since the problem seemed to originate from the edges of the tank and the center of it, we tried different versions of the grid, where we would either calculate the values in the center from the equations or just set them to a reasonable value, or where we would even avoid having any rid points in the exact center. For the outer edge, we also tried different boundary conditions, like no-slip condition, where we would set the values at the edge to zero, since they must have the same velocity as the tank.
+			Since the problem seemed to originate from the edges and the center of the tank, we tried different types of the grid, where we would either calculate the values in the center from the equations or just set them to a reasonable value, or where we would even avoid having any grid points in the exact center. For the outer edge, we also tried different boundary conditions, like the no-slip condition, where we would set the values at the edge to zero, since they must have the same velocity as the tank.
 			
 			We also tried to calculate the vertical velocity $w$ from the other two components using the continuity equation (\ref{eq:nondivergence})
 			
@@ -542,7 +544,7 @@
 				\label{eq: neues w_c}
 			\end{eqnarray}
 			
-			First, we only calculated the vertical velocity in the center this way, but after this didn't work either, we calculated the vertical velocity on every point from this condition. But even applying the continuity equation on $w$ wouldn't give us a non-divergent flow.
+			First, we only calculated the vertical velocity in the center this way, but after this did not work either, we calculated the vertical velocity on every point from this condition. But even applying the continuity equation on $w$ would not give us a non-divergent flow.
 			
 			We could not find out whether the divergence of the velocity was connected to a mistake in the program or to a numerical mistake. Since it is a rather long program with long equations and many similar looking terms, it is highly probable that there are still many unseen mistakes or typing errors inside the program.
 			
@@ -553,22 +555,23 @@
 			\newpage
 			
 	\subsection{Simulation of Thermal Winds}
-		Since the numerical solution of the full Navier-Stokes equation didn't work, we decided to visualize one of the phenomena of the Lab Course. Thermal wind seemed to be the most interesting phenomenon to simulate. The corresponding experiment is shown in figure \ref{fig:TWExperiment} and explained below.
+		Since the numerical solution of the full Navier-Stokes equation did not work, we decided to visualize one of the phenomena of the Lab Course. Thermal wind seemed to be the most interesting phenomenon to simulate. The corresponding experiment is shown in figure \ref{fig:TWExperiment} and explained below.
 		
 		\begin{figure}[h]
 		%\begin{minipage}{0.8\textwidth}
 		%\begin{center}
 			\centering
+			\captionsetup{width=0.8\textwidth}
 			\includegraphics[width=0.8\textwidth]{ThermalWindExp.jpg}
-			\caption{Left side: Rotating cylindrical tank filled with water and a can in its center, which is filled with ice. Right side: The radial temperature gradient should cause a circulation in the tank. \cite{Marshall1965}}
+			\caption[Experiment Thermal Wind]{Left side: Rotating cylindrical tank filled with water and a can in its center, which is filled with ice. Right side: The radial temperature gradient should cause a circulation in the tank. \cite{Marshall1965}}
 			\label{fig:TWExperiment}
 		%\end{center}
 		%\end{minipage}
 		\end{figure}
 		
-		We place a cylindrical tank with a can in its center on a turntable. The tank is filled with water to a depth of $\unit[20]{cm}$ or so, and the turntable is rotated slowly ($\Omega < \unit[1]{rpm}$). After solid body rotation is achieved, the can is filled with ice, which induces a radial temperature gradient. A thermal wind shear develops in balance with it, as sketched in figure \ref{fig:TWExperiment} on the right.
+		We place a cylindrical tank with a can in its center on a turntable. The tank is filled with water to a depth of about $\unit[20]{cm}$, and the turntable is rotated slowly ($\Omega < \unit[1]{rpm}$). After solid body rotation is achieved, the can is filled with ice, which induces a radial temperature gradient. A thermal wind shear develops in balance with it, as sketched in figure \ref{fig:TWExperiment} on the right.
 		\newline
-		In the lab this can be seen by adding some dye in the water. The dye streaks are tilted over into a corkscrew pattern by an azimuthal current and form a spiral around the ice-filled can in the center. Pictures of it can be seen in figure \ref{fig:TWExp1} and \ref{fig:TWExp2}.
+		In the lab the circulation, caused by the thermal wind shear, can be seen by adding some dye in the water. The dye streaks are tilted over into a corkscrew pattern by an azimuthal current and form a spiral around the ice-filled can in the center. Pictures of it can be seen in figure \ref{fig:TWExp1} and \ref{fig:TWExp2}.
 		
 		% Foto aus dem Buch, etwas schönes als eigene Fotos, aber halt aus dem Buch...
 %		\begin{figure}
@@ -583,6 +586,7 @@
 		\begin{figure}
 		%	\begin{minipage}{0.8\textwidth}
 				\centering
+				\captionsetup{width=0.9\textwidth}
 				\subfloat{
 				\includegraphics[width=0.4\textwidth]{k1.jpg}
 				\label{fig:TWExp1}}
@@ -592,7 +596,7 @@
 				\includegraphics[width=0.4\textwidth]{k3b.jpg}
 				\label{fig:TWExp2}}
 		%	\end{minipage}
-			\caption{Photographs of the experiment in the Lab Course. The blue dye shows the corkscrew pattern that is formed by the thermal wind.}
+			\caption[Photographs of Thermal Wind Experiment]{Photographs of the experiment in the Lab Course. The blue dye shows the corkscrew pattern that is formed by the thermal wind.}
 		\end{figure}
 		
 		
@@ -605,40 +609,42 @@
 			% Bilder mit minipage machen!
 			\begin{figure}[h]
 				\centering
+				\captionsetup{width=0.9\textwidth}
 				\subfloat{
-					\includegraphics[width=0.5\textwidth]{InVZeroF.jpg}
+					\includegraphics[width=0.45\textwidth]{InVZeroF.jpg}
 					\label{fig:TW_xy}}
 				\subfloat{
-					\includegraphics[width=0.5\textwidth]{InVZeroFz.jpg}
+					\includegraphics[width=0.45\textwidth]{InVZeroFz.jpg}
 					\label{fig:TW_z}}
 					\qquad
-				\caption{Visualization of the velocity with initial condition $\vec{u}=0$. Vectors show the direction and value of the velocity at each point of the grid.}
+				\caption[Visualization of the velocity with bottom boundary velocity $\vec{u}=0$]{Visualization of the velocity with bottom boundary velocity $\vec{u}=0$. Vectors show the direction and value of the velocity at each point of the grid.}
 			\end{figure}
 			
-			Which looks just the way we have expected it. The radial temperature gradient induced a thermal wind shear and therefore a circulation of the water. The geostrophic flow varies with height, the currents increase with height.
+			Those look the way we have expected it. The radial temperature gradient induced a thermal wind shear and therefore a circulation of the water. The geostrophic flow varies with height, the currents increase with height.
 			
-			When we are only looking at the problem away from the tank edges, we can also set the velocity  at the bottom to a different value than zero. We then get the following results:
-			\todoFormat{anders schreiben}
+			When we are only looking at the problem away from the tank edges, we can also set the velocity  at the bottom to a different value than zero.
 			
 			\begin{figure}[ht]
 				\centering
+				\captionsetup{width=0.9\textwidth}
 				\subfloat{
-					\includegraphics[width=0.5\textwidth]{InVSmallPosF.jpg}
+					\includegraphics[width=0.45\textwidth]{InVSmallPosF.jpg}
 					\label{fig:TW_small_pos}}
 				\subfloat{
-					\includegraphics[width=0.5\textwidth]{InVSmallNegF.jpg}
+					\includegraphics[width=0.45\textwidth]{InVSmallNegF.jpg}
 					\label{fig:TW_small_neg}}
 					\qquad
-				\caption{Visualization of the velocity with a small initial velocity $|\vec{u}|<<1$. Left: $|\vec{u}|>0$, right: $|\vec{u}|<0$.}
+				\caption[Visualization of the velocity with a small bottom boundary velocity]{Visualization of the velocity with a small bottom boundary velocity $|\vec{u}|<<1$. Left: positive azimuthal velocity on the lowest simulated layer, $v>0$. Right: $v<0$.}
 			\end{figure}
 			
 			
-			For small velocities in the lowest simulated layer the induced current is still clearly visible and is strong enough to turn the direction of the current, as we can see in figure \ref{fig:TW_small_neg}. If we set the initial velocity to high, the effects of the thermal wind shear become too small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
+			For small velocities in the lowest simulated layer, the induced current is still clearly visible and is even strong enough to turn the direction of the current, as we can see in figure \ref{fig:TW_small_neg}. If we set the velocity of the bottom too high, the effects of the thermal wind shear become too small to have a noticeable effect (figure \ref{fig:TW_big_pos} and \ref{fig:TW_big_neg}).
 			
-			All in all, the results of the simulation show the effects, that we expected. 
+			All in all, the results of the simulation show the effects that we expected. 
 			
 			\begin{figure}[H]
 				\centering
+				\captionsetup{width=0.9\textwidth}
 				\subfloat{
 					\includegraphics[width=0.5\textwidth]{InVBigPosF.jpg}
 					\label{fig:TW_big_pos}}
@@ -646,20 +652,18 @@
 					\includegraphics[width=0.5\textwidth]{InVBigNegF.jpg}
 					\label{fig:TW_big_neg}}
 					\qquad
-				\caption{Visualization of the velocity with a big initial velocity $|\vec{u}| \approx 1$. Left: $|\vec{u}|>0$, right: $|\vec{u}|<0$}
+				\caption[Visualization of the velocity with a big bottom boundary velocity]{Visualization of the velocity with a big bottom boundary velocity $|\vec{u}| \approx 1$. Left: positive azimuthal velocity on the lowest simulated layer, $v>0$. Right: $v<0$.}
 			\end{figure}
 	\newpage
 \section{Conclusion}
-	% weg über ROtation der GLeichung wäre besser gewesen
-	% Konnte sehr viel lernen durch diese Arbeit
-	to be done...
-	\todoWriteMore{la la la... you should finally do this!!}
+
+	The goal of this thesis was to get a basic understanding of large scale ocean and atmosphere dynamics and to numerically solve the Navier-Stokes equation to computationally simulate these dynamics in a rotating water tank. \\
+	First, we applied the general Navier-Stokes equation to the setting of the Lab Course experiment. To accomplish this, we had to transform the equation in a rotating frame and convert it to cylindrical coordinates. The thus obtained equation then had to be solved numerically. To achieve this, we needed to discretize the equation and apply a staggered grid to the area of the tank. And in a last step, the discretized equation was implemented and looped over time. The calculated flow was divergent, therefore the pressure needed to be readjusted after every time step. Even with pressure readjustment, the flow remained divergent. To proceed, we concentrated on the phenomenon of thermal wind and redid all the steps with the simplified thermal wind equation. The results could then be visualized in a vector plot. \\
+		
+	Although the main part of this thesis did not work as planned, I was still able to learn a lot from working on the program, trying to find the errors and editing it. With the necessary simplifications, we were able to visualize the effects of a purely radial temperature gradient on the motion of the water in the rotating tank. I gained a lot understanding of how numerical solutions are done. From gathering the necessary theoretical background, a much better understanding of ocean and atmosphere dynamics and where certain winds or circulations come from could be gained.
 	
-	Although the main part of this thesis did not work as planned, I was still able to learn a lot from working on the program, trying to find the errors and editing it. With the necessary simplifications, we were able to visualize the effects of a purely radial temperature gradient on the motion of the water in the rotating tank. This is still quite a nice result. 
-	
-	- Gained a lot understanding of how numerical solutions are done.
-	
-	- Better understanding of ocean and atmosphere dynamics and where certain winds or circulations come from
+\section{Acknowledgements}
+	I  would like to thank the advisor of this project, Patrik Pfister for the valuable guidance and advice. I would also like to thank him for always thinking ahead and knowing what topics could cause problems. And therefore, always being prepared for my questions.
 	
 	\newpage
 	
@@ -670,9 +674,9 @@
 	\nocite{*}
 
 	\newpage
-\section{Appendix / Code}
-	
-	\subsection{Thermal Wind}
+
+\appendix
+\section{Code of Thermal Wind Simulation}
 	
 		\begin{lstlisting}
 		
